@@ -1,0 +1,210 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Modifier",
+    "description": "A Modifier for the game",
+    "type": "object",
+
+    "definitions": {
+        "condition": {
+            "oneOf": [
+                {
+                    "properties": {
+                        "type": {
+                            "const": "FLAG",
+                            "description": "the type of condition"
+                        },
+                        "id": {
+                            "description": "",
+                            "type": "string"
+                        },
+                        "value":  {
+                            "description": "",
+                            "type": "boolean"
+                        }
+                    },
+                    "required": ["type", "id", "value"]
+                },
+                {
+                    "properties": {
+                        "type": {
+                            "const": "STAT",
+                            "description": "the type of condition"
+                        },
+                        "id": {
+                            "description": "the id of the requested STAT",
+                            "type": "string"
+                        },
+                        "comparission": {
+                            "description": "the type of comparission to do",
+                            "enum": ["<", "<=", "==", ">=", ">", "!="]
+                        },
+                        "value": {
+                            "description": "the value to compare the STAT to",
+                            "oneOf": [
+                                { "type": "number" },
+                                { "type": "string", "pattern": "^[0-9]+%$"}
+                            ]
+                        }
+                    },
+                    "required": ["type", "id", "comparission", "value"]
+                },
+                {
+                    "properties": {
+                        "type": {
+                            "const": "HAS_ITEM",
+                            "description": "Checks if entity has item in invetory, if present"
+                        },
+                        "item": {
+                            "description": "the item id to search for",
+                            "type": "string"
+                        },
+                        "value": {
+                            "description": "should it be present or not",
+                            "type": "boolean"
+                        }
+                    },
+                    "required": ["type", "item", "value"]
+                },
+                {
+                    "properties": {
+                        "type": {
+                            "const": "CHANCE",
+                            "description": "Generates a chance to execute"
+                        },
+                        "value": {
+                            "description": "will check wether chance >= this value",
+                            "type": "number"
+                        }
+                    }
+                }
+            ]
+        }
+    },
+
+    "properties": {
+        "id": { 
+            "description": "The internal ID under which the modifier will be registered",
+            "type": "string",
+            "exclusiveMinimum": 0
+        },
+        "expires": {
+            "description": "the amount of time this modifier stays active",
+            "type": "number"
+        },
+        "conditions": {
+            "description": "The list of conditions that have to be true for the effects to take place",
+            "type": "array",
+            "items": { "$ref": "#/definitions/condition" }
+        },
+        "effects": {
+            "description": "The list of effects which should be applied",
+            "type": "array",
+            "exclusiveMinimum": 0,
+            "items": {
+                "type": "object",
+                "oneOf": [
+                    {
+                        "properties": {
+                            "type": {
+                                "const": "DO",
+                                "description": "The type of effect to use"
+                            },
+                            "value": {
+                                "description": "the tag of the event function to use",
+                                "type": "string"
+                            },
+                            "target": {
+                                "description": "The target on which to execute the function",
+                                "enum": ["this", "player", "owner", "source", "killer"]
+                            },
+                            "conditions": {
+                                "description": "The list of conditions that have to be true for this effect to take place",
+                                "type": "array",
+                                "items": { "$ref": "#/definitions/condition" }
+                            }
+                        },
+                        "required": ["type", "value"]
+                    },
+                    {
+                        "properties": {
+                            "type": {
+                                "const": "ADD_MODIFIER",
+                                "description": "The type of effect to use"
+                            },
+                            "id": {
+                                "description": "the id of the modifier to add",
+                                "type": "string"
+                            },
+                            "target": {
+                                "description": "The target on which to add the modifier",
+                                "enum": ["this", "player", "owner", "source", "killer"]
+                            },
+                            "conditions": {
+                                "description": "The list of conditions that have to be true for this effect to take place",
+                                "type": "array",
+                                "items": { "$ref": "#/definitions/condition" }
+                            }
+                        },
+                        "required": ["type", "id"]
+                    },
+                    {
+                        "properties": {
+                            "type": {
+                                "const": "SET_FLAG",
+                                "description": "the type of effect to use"
+                            },
+                            "time": {
+                                "description": "the time for which the effect stays active",
+                                "type": "number"
+                            },
+                            "flag": {
+                                "description": "The flag-ID to set",
+                                "type": "string"
+                            },
+                            "value": {
+                                "description": "the new state of the flag",
+                                "type": "boolean"
+                            },
+                            "conditions": {
+                                "description": "The list of conditions that have to be true for this effects to take place",
+                                "type": "array",
+                                "items": { "$ref": "#/definitions/condition" }
+                            }
+                        },
+                        "required": ["type", "flag", "value"]
+                    },
+                    {
+                        "properties": {
+                            "type": {
+                                "description": "The kind of effect to use",
+                                "enum": ["SET", "ADD", "SUBTRACT", "MULTIPLY", "DIVIDE", "LERPTO", "LERPADD", "LERPSUBTRACT"]
+                            },
+                            "time": {
+                                "description": "the time for which the effect stays active (will also be used as the timeframe for lerp operations)",
+                                "type": "number"
+                            },
+                            "stat": {
+                                "description": "The STAT-ID to modify",
+                                "type": "string"
+                            },
+                            "value": {
+                                "description": "The value to use for the effect",
+                                "oneOf": [
+                                    { "type": "number" },
+                                    { "type": "string", "pattern": "^[0-9]+%$"}
+                                ]
+                            },
+                            "conditions": {
+                                "description": "The list of conditions that have to be true for this effect to take place",
+                                "type": "array",
+                                "items": { "$ref": "#/definitions/condition" }
+                            }
+                        },
+                        "required": ["type", "stat", "value"]
+                    }
+                ]
+            }
+        }
+    },
+    "required": [ "id", "effects" ]
+}
