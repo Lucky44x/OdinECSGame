@@ -115,8 +115,12 @@ do_drawing_systems :: proc() {
 Creates a new Entity and returns it's entityID Handle for the ECS-World
 */
 @(private)
-entity_create :: proc() -> ecs.entity_id {
+entity_create :: proc(active: bool = false) -> ecs.entity_id {
     ent: ecs.entity_id
     ent, _ = ecs.create_entity(&ecs_world)
+
+    act, _ := ecs.add_component(&t_State, ent)
+    act ^= active
+
     return ent
 }

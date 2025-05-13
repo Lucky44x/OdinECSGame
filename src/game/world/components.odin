@@ -17,8 +17,6 @@ LookatMouse :: struct{}
 LookatTransform :: ^c_Transform
 
 // Component DEFS
-c_Inactive :: struct {}
-
 c_MovementStats :: struct {
     speed, acceleration: f32
 }
@@ -54,6 +52,8 @@ c_Cullable :: struct{
     culled: bool
 }
 
+c_State :: bool
+
 // Table DEFS
 t_Transform: ecs.Table(c_Transform)
 t_TransformChild: ecs.Table(c_TransformChild)
@@ -62,7 +62,7 @@ t_SpriteRenderer: ecs.Table(c_SpriteRenderer)
 t_TransformLookAt: ecs.Table(c_TransformLookAt)
 t_MovementStats: ecs.Table(c_MovementStats)
 t_Cullable: ecs.Table(c_Cullable)
-t_Inactive: ecs.Table(c_Inactive)
+t_State: ecs.Table(c_State)
 
 //Views
 v_SpriteRendering: ecs.View
@@ -87,8 +87,6 @@ Renders all Sprite-Renderer Components
 s_sprite_renderer_render :: proc() {
     for ecs.iterator_next(&it_SpriteRendering) {
         eid := ecs.get_entity(&it_SpriteRendering)
-
-        if ecs.has_component(&t_Inactive, eid) do continue
 
         culled: ^c_Cullable = ecs.get_component(&t_Cullable, eid)
 
@@ -144,8 +142,6 @@ Updates child-transforms to follow their parent's position, rotation and scale
 s_children_transform_update :: proc() {
     for ecs.iterator_next(&it_TransformChildren) {
         eid := ecs.get_entity(&it_TransformChildren)
-
-        if ecs.has_component(&t_Inactive, eid) do continue
         
         //spriteRend: ^c_SpriteRenderer = ecs.get_component(&t_SpriteRenderer, eid)
         childTransform: ^c_TransformChild = ecs.get_component(&t_TransformChild, eid)
@@ -175,8 +171,6 @@ s_transform_lookat_target :: proc() {
 
     for ecs.iterator_next(&it_TransformLookat) {
         eid := ecs.get_entity(&it_TransformLookat)
-
-        if ecs.has_component(&t_Inactive, eid) do continue
 
         culled := ecs.get_component(&t_Cullable, eid)
         if culled.culled do continue
@@ -213,8 +207,6 @@ s_apply_velocity :: proc() {
     for ecs.iterator_next(&it_VelocityApplication) {
         eid := ecs.get_entity(&it_VelocityApplication)
 
-        if ecs.has_component(&t_Inactive, eid) do continue
-
         vel: ^c_Velocity = ecs.get_component(&t_Velocity, eid)
         transform: ^c_Transform = ecs.get_component(&t_Transform, eid)
 
@@ -231,8 +223,6 @@ Sets the respective entities to be culled, when outside view-frustum (as describ
 s_cull_entities :: proc() {
     for ecs.iterator_next(&it_CullingSystem) {
         eid := ecs.get_entity(&it_CullingSystem)
-
-        if ecs.has_component(&t_Inactive, eid) do continue
 
         cullingData: ^c_Cullable = ecs.get_component(&t_Cullable, eid)
         transform: ^c_Transform = ecs.get_component(&t_Transform, eid)
@@ -264,7 +254,6 @@ init_comp_general :: proc(db: ^ecs.Database) {
     ecs.table_init(&t_TransformLookAt, db, 5000)
     ecs.table_init(&t_MovementStats, db, 5000)
     ecs.table_init(&t_Cullable, db, 5000)
-    ecs.table_init(&t_Inactive, db, 5000)
 
     //Initialize views
     ecs.view_init(&v_SpriteRendering, db, {&t_SpriteRenderer, &t_Transform, &t_Cullable})

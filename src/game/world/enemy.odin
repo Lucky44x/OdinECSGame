@@ -49,8 +49,6 @@ s_do_enemy_boid_movement :: proc() {
     for ecs.iterator_next(&it_EnemyMovement) {
         eid := ecs.get_entity(&it_EnemyMovement)
 
-        if ecs.has_component(&t_Inactive, eid) do continue
-
         movementStats: ^c_MovementStats = ecs.get_component(&t_MovementStats, eid)
         boidParticle: ^c_BoidParticle = ecs.get_component(&t_BoidParticle, eid)
         velocity: ^c_Velocity = ecs.get_component(&t_Velocity, eid)
@@ -123,7 +121,6 @@ Creates an enemy of the specified size and position
 enemy_build :: proc() -> ecs.entity_id {
     enemyEntity := entity_create()
 
-    inactive, _ := ecs.add_component(&t_Inactive, enemyEntity)
     transform, _ := ecs.add_component(&t_Transform, enemyEntity)
     lookat, _ := ecs.add_component(&t_TransformLookAt, enemyEntity)
     velocity, _ := ecs.add_component(&t_Velocity, enemyEntity)

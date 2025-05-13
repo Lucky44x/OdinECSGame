@@ -25,14 +25,10 @@ it_CollisionEvent: ecs.Iterator
 s_resolve_collisions :: proc() {
     for ecs.iterator_next(&it_CollisionEvent) {
         eid := ecs.get_entity(&it_CollisionEvent)
-    
-        isInactive := ecs.has_component(&t_Inactive, eid)
-        if isInactive do continue
 
         event: ^c_CollisionEvent = ecs.get_component(&t_CollisionEvent, eid)
         if event.entityA.ix == 0 || event.entityB.ix == 0 do continue
             
-        fmt.printfln("Resolved collision: %i -=- %i, pool count: %i, active: %b", event.entityA, event.entityB, eventPool.count, isInactive)
         pool_push(&eventPool, eid)
     }
 
@@ -52,7 +48,6 @@ spawn_collision_event :: proc(
 build_collision_event :: proc() -> ecs.entity_id {
     eventEntity := entity_create()
 
-    ecs.add_component(&t_Inactive, eventEntity)
     ecs.add_component(&t_CollisionEvent, eventEntity)
     return eventEntity
 }

@@ -34,8 +34,6 @@ s_gun_input :: proc() {
     for ecs.iterator_next(&it_GunInput) {
         eid := ecs.get_entity(&it_GunInput)
 
-        if ecs.has_component(&t_Inactive, eid) do continue
-
         input: ^c_GunInput = ecs.get_component(&t_GunInput, eid)
         stats: ^c_GunStats = ecs.get_component(&t_GunStats, eid)
         transform: ^c_Transform = ecs.get_component(&t_Transform, eid)

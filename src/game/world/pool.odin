@@ -18,6 +18,7 @@ pool_init :: proc(
 ) {
     self.builder = builder
     
+    //TODO: Clear at deinit call
     self.entities = make([]ecs.entity_id, maxFillsize)
 
     for i := 0; i < startFillSize; i += 1 {
@@ -35,7 +36,6 @@ pool_pop :: proc(
         
         assert(self.db == nil)
 
-        ecs.remove_component(&t_Inactive, self.entities[self.count])
         return self.entities[self.count]
     }
 
@@ -57,5 +57,4 @@ pool_push :: proc(
     //Insert into pool
     self.entities[self.count] = entity
     self.count += 1
-    ecs.add_component(&t_Inactive, entity)
 }
