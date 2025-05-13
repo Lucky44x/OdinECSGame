@@ -22,29 +22,29 @@ init_world :: proc() {
     init_comp_gun(&ecs_world)
     init_comp_bullet(&ecs_world)
     init_comp_enemy(&ecs_world)
+    init_comp_collision_resolution(&ecs_world)
 
     //Init the rest of the world
     playerID, _ := player_create({100,100}, {25,25}, 5, 5, 5)
     playerTransform: ^c_Transform = ecs.get_component(&t_Transform, playerID)
 
     //Create enemies
-    enemy_create({500, 250}, {25, 25}, 5, playerTransform)
-    enemy_create({550, 250}, {25, 25}, 5, playerTransform)
-    enemy_create({600, 250}, {25, 25}, 5, playerTransform)
-    enemy_create({650, 250}, {25, 25}, 5, playerTransform)
-    enemy_create({500, 300}, {25, 25}, 5, playerTransform)
-    enemy_create({550, 300}, {25, 25}, 5, playerTransform)
-    enemy_create({600, 300}, {25, 25}, 5, playerTransform)
-    enemy_create({650, 300}, {25, 25}, 5, playerTransform)
-    enemy_create({500, 350}, {25, 25}, 5, playerTransform)
-    enemy_create({550, 350}, {25, 25}, 5, playerTransform)
-    enemy_create({600, 350}, {25, 25}, 5, playerTransform)
-    enemy_create({650, 350}, {25, 25}, 5, playerTransform)
-    enemy_create({500, 400}, {25, 25}, 5, playerTransform)
-    enemy_create({550, 400}, {25, 25}, 5, playerTransform)
-    enemy_create({600, 400}, {25, 25}, 5, playerTransform)
-    enemy_create({650, 400}, {25, 25}, 5, playerTransform)
-
+    enemy_spawn({500, 250}, {25, 25}, 5, playerTransform)
+    enemy_spawn({550, 250}, {25, 25}, 5, playerTransform)
+    enemy_spawn({600, 250}, {25, 25}, 5, playerTransform)
+    enemy_spawn({650, 250}, {25, 25}, 5, playerTransform)
+    enemy_spawn({500, 300}, {25, 25}, 5, playerTransform)
+    enemy_spawn({550, 300}, {25, 25}, 5, playerTransform)
+    enemy_spawn({600, 300}, {25, 25}, 5, playerTransform)
+    enemy_spawn({650, 300}, {25, 25}, 5, playerTransform)
+    enemy_spawn({500, 350}, {25, 25}, 5, playerTransform)
+    enemy_spawn({550, 350}, {25, 25}, 5, playerTransform)
+    enemy_spawn({600, 350}, {25, 25}, 5, playerTransform)
+    enemy_spawn({650, 350}, {25, 25}, 5, playerTransform)
+    enemy_spawn({500, 400}, {25, 25}, 5, playerTransform)
+    enemy_spawn({550, 400}, {25, 25}, 5, playerTransform)
+    enemy_spawn({600, 400}, {25, 25}, 5, playerTransform)
+    enemy_spawn({650, 400}, {25, 25}, 5, playerTransform)
 }
 
 /*
@@ -87,6 +87,8 @@ do_logic_systems :: proc() {
     //Collision and collision handle phase
     s_collider_update()
     s_collision_checker()
+
+    s_resolve_collisions()
 }
 
 /*

@@ -29,8 +29,12 @@ s_do_boid_update :: proc() {
     for ecs.iterator_next(&it_Boids) {
         eid := ecs.get_entity(&it_Boids)
 
+        if ecs.has_component(&t_Inactive, eid) do continue
+
         transform: ^c_Transform = ecs.get_component(&t_Transform, eid)
         boid: ^c_BoidParticle = ecs.get_component(&t_BoidParticle, eid)
+
+        if boid.player_transform == nil do continue
 
         boid.steering_vector = get_boid_velocity_vector(
             transform, boid.player_transform,

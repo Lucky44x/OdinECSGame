@@ -36,6 +36,8 @@ s_movementInput :: proc() {
     for ecs.iterator_next(&it_PlayerMovement) {
         eid := ecs.get_entity(&it_PlayerMovement)
 
+        if ecs.has_component(&t_Inactive, eid) do continue
+
         velocity: ^c_Velocity = ecs.get_component(&t_Velocity, eid)
         input: ^c_MovementInput = ecs.get_component(&t_MovementInput, eid)
         stats: ^c_MovementStats = ecs.get_component(&t_MovementStats, eid)

@@ -27,6 +27,10 @@ import "core:fmt"
 @(private="file") COHESION_WEIGHT_MAX : f32 : 3
 */
 
+//Pooling
+@(private="file")
+EnemiesPool: Pool
+
 //Components
 @(private="file")
 c_EnemyStats :: struct {
@@ -44,6 +48,8 @@ c_EnemyStats :: struct {
 s_do_enemy_boid_movement :: proc() {
     for ecs.iterator_next(&it_EnemyMovement) {
         eid := ecs.get_entity(&it_EnemyMovement)
+
+        if ecs.has_component(&t_Inactive, eid) do continue
 
         movementStats: ^c_MovementStats = ecs.get_component(&t_MovementStats, eid)
         boidParticle: ^c_BoidParticle = ecs.get_component(&t_BoidParticle, eid)
@@ -65,62 +71,68 @@ init_comp_enemy :: proc(
 ) {
     ecs.table_init(&t_EnemyStats, db, 5000)
 
+    pool_init(&EnemiesPool, db, enemy_build, 25, 1024)
+
     ecs.view_init(&v_EnemyMovement, db, {&t_EnemyStats, &t_MovementStats, &t_BoidParticle, &t_Velocity})
     ecs.iterator_init(&it_EnemyMovement, &v_EnemyMovement)
 }
 
 /*
-Creates an enemy of the specified size and position
+Spawns an enemy with the given attributes
 */
-enemy_create :: proc(
+enemy_spawn :: proc(
     startPosition, startScale: rl.Vector2,
     baseSpeed: f32,
     playerRef: ^c_Transform
-) -> ecs.entity_id {
-    enemyEntity := entity_create()
+) {
+    enemy_entity := pool_pop(&EnemiesPool)
 
-    enemyTransform, _ := ecs.add_component(&t_Transform, enemyEntity)
+    enemyTransform: ^c_Transform = ecs.get_component(&t_Transform, enemy_entity)
     enemyTransform.position = startPosition
     enemyTransform.scale = startScale
     enemyTransform.origin = rl.Vector2{ 0.5, 0.5 }
 
-    enemyVelocity, _ := ecs.add_component(&t_Velocity, enemyEntity)
+    enemyVelocity: ^c_Velocity = ecs.get_component(&t_Velocity, enemy_entity)
     enemyVelocity.deceleration_coeff = 0
 
-    playerLookAt, _ := ecs.add_component(&t_TransformLookAt, enemyEntity)
+    playerLookAt: ^c_TransformLookAt = ecs.get_component(&t_TransformLookAt, enemy_entity)
     playerLookAt.target = playerRef
 
-    enemySpriteRenderer, _ := ecs.add_component(&t_SpriteRenderer, enemyEntity)
+    enemySpriteRenderer: ^c_SpriteRenderer = ecs.get_component(&t_SpriteRenderer, enemy_entity)
     enemySpriteRenderer.sprite = resource.PrimitvieRect{}
     enemySpriteRenderer.color = rl.RED
 
-    ecs.add_component(&t_Cullable, enemyEntity)
-
-    movementStats, _ := ecs.add_component(&t_MovementStats, enemyEntity)
+    movementStats: ^c_MovementStats = ecs.get_component(&t_MovementStats, enemy_entity)
     movementStats.speed = baseSpeed
     movementStats.acceleration = 2
 
-    enemyHashable, _ := ecs.add_component(&t_HashableEntity, enemyEntity)
+    enemyHashable: ^c_HashableEntity = ecs.get_component(&t_HashableEntity, enemy_entity)
     enemyHashable.type = { .ENEMY, .BOID, .COLLIDES }
 
-    enemyStats, _ := ecs.add_component(&t_EnemyStats, enemyEntity) 
-
-    enemyBoid, _ := ecs.add_component(&t_BoidParticle, enemyEntity)
+    enemyBoid: ^c_BoidParticle = ecs.get_component(&t_BoidParticle, enemy_entity)
     enemyBoid.player_transform = playerRef
-    /*
-    enemyBoid.player_weight = PLAYER_WEIGHT_MAX
-    enemyBoid.alignment_weight = ALIGNMENT_WEIGHT_MAX
 
-    enemyBoid.cohesion_weight = COHESION_WEIGHT_MAX
-    enemyBoid.seperation_weight = SEPERATION_WEIGHT_MAX
-
-    enemyBoid.perception_radius = PERCEPTION_RADIUS_MAX
-    enemyBoid.player_perception_radius = PLAYER_PERCEPTION_RADIUS_MAX
-    */
-
-    enemyCollider, _ := ecs.add_component(&t_Collider, enemyEntity)
+    enemyCollider: ^c_Collider = ecs.get_component(&t_Collider, enemy_entity)
     enemyCollider.offX = (enemyTransform.scale[0] / 2)
     enemyCollider.offY = (enemyTransform.scale[1] / 2)
+}
 
+/*
+Creates an enemy of the specified size and position
+*/
+enemy_build :: proc() -> ecs.entity_id {
+    enemyEntity := entity_create()
+
+    inactive, _ := ecs.add_component(&t_Inactive, enemyEntity)
+    transform, _ := ecs.add_component(&t_Transform, enemyEntity)
+    lookat, _ := ecs.add_component(&t_TransformLookAt, enemyEntity)
+    velocity, _ := ecs.add_component(&t_Velocity, enemyEntity)
+    spriteRend, _ := ecs.add_component(&t_SpriteRenderer, enemyEntity)
+    cullable, _ := ecs.add_component(&t_Cullable, enemyEntity)
+    movementStats, _ := ecs.add_component(&t_MovementStats, enemyEntity)
+    hashData, _ := ecs.add_component(&t_HashableEntity, enemyEntity)
+    stats, _ := ecs.add_component(&t_EnemyStats, enemyEntity) 
+    boid, _ := ecs.add_component(&t_BoidParticle, enemyEntity)
+    collider, _ := ecs.add_component(&t_Collider, enemyEntity)
     return enemyEntity
 }
