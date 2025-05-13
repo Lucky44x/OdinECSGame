@@ -60,8 +60,10 @@ bullet_create :: proc(
     //bulletHashData.type = { .BULLET }
 
     bulletCollider, _ := ecs.add_component(&t_Collider, bulletEntity)
-    bulletCollider.offX = -2.5
-    bulletCollider.offY = -2.5
+    bulletCollider.offX = 3.75
+    bulletCollider.offY = 3.75
+    bulletCollider.offW = 2.5
+    bulletCollider.offH = 2.5
 
     bulletCollisionChecker, _ := ecs.add_component(&t_CollisionChecker, bulletEntity)
     bulletCollisionChecker.type = .BoxCastCollision

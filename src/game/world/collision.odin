@@ -44,8 +44,8 @@ s_collider_update :: proc() {
     
         collider.rect.x = transform.position[0] - collider.offX
         collider.rect.y = transform.position[1] - collider.offY
-        collider.rect.width = transform.scale[0] - collider.offW
-        collider.rect.height = transform.scale[1] - collider.offH
+        collider.rect.width = transform.scale[0] + collider.offW
+        collider.rect.height = transform.scale[1] + collider.offH
     }
 
     ecs.iterator_reset(&it_ColliderUpdate)

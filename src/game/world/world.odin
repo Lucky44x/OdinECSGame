@@ -105,9 +105,10 @@ do_drawing_systems :: proc() {
 
     s_sprite_renderer_render()
 
-    debug_bucket_display()
-
-    debug_draw_colliders()
+    when ODIN_DEBUG {
+        debug_bucket_display()
+        debug_draw_colliders()
+    }
 
     rl.EndMode2D()
 
