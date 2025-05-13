@@ -2,6 +2,7 @@ package world
 
 import rl "vendor:raylib"
 import ecs "../../../libs/ode_ecs"
+import "core:fmt"
 
 @(private="file") PERCEPTION_RADIUS :: 256
 @(private="file") PLAYER_PERCEPTION_RADIUS :: 1024
@@ -29,8 +30,15 @@ s_do_boid_update :: proc() {
     for ecs.iterator_next(&it_Boids) {
         eid := ecs.get_entity(&it_Boids)
 
+        state: ^c_State = ecs.get_component(&t_State, eid)
+        if !state^ do continue
+
         transform: ^c_Transform = ecs.get_component(&t_Transform, eid)
         boid: ^c_BoidParticle = ecs.get_component(&t_BoidParticle, eid)
+
+        if boid.player_transform == nil {
+            fmt.printfln("Error: player_transform for boid: %i was nil", eid)
+        }
 
         boid.steering_vector = get_boid_velocity_vector(
             transform, boid.player_transform,

@@ -88,8 +88,10 @@ s_sprite_renderer_render :: proc() {
     for ecs.iterator_next(&it_SpriteRendering) {
         eid := ecs.get_entity(&it_SpriteRendering)
 
-        culled: ^c_Cullable = ecs.get_component(&t_Cullable, eid)
+        state: ^c_State = ecs.get_component(&t_State, eid)
+        if !state^ do continue
 
+        culled: ^c_Cullable = ecs.get_component(&t_Cullable, eid)
         if culled.culled do continue
 
         spriteRend: ^c_SpriteRenderer = ecs.get_component(&t_SpriteRenderer, eid)
@@ -142,7 +144,10 @@ Updates child-transforms to follow their parent's position, rotation and scale
 s_children_transform_update :: proc() {
     for ecs.iterator_next(&it_TransformChildren) {
         eid := ecs.get_entity(&it_TransformChildren)
-        
+       
+        state: ^c_State = ecs.get_component(&t_State, eid)
+        if !state^ do continue
+
         //spriteRend: ^c_SpriteRenderer = ecs.get_component(&t_SpriteRenderer, eid)
         childTransform: ^c_TransformChild = ecs.get_component(&t_TransformChild, eid)
         transform: ^c_Transform = ecs.get_component(&t_Transform, eid)
@@ -171,6 +176,9 @@ s_transform_lookat_target :: proc() {
 
     for ecs.iterator_next(&it_TransformLookat) {
         eid := ecs.get_entity(&it_TransformLookat)
+
+        state: ^c_State = ecs.get_component(&t_State, eid)
+        if !state^ do continue
 
         culled := ecs.get_component(&t_Cullable, eid)
         if culled.culled do continue
@@ -206,6 +214,9 @@ Moves every Transform by its Velocity Vector
 s_apply_velocity :: proc() {
     for ecs.iterator_next(&it_VelocityApplication) {
         eid := ecs.get_entity(&it_VelocityApplication)
+
+        state: ^c_State = ecs.get_component(&t_State, eid)
+        if !state^ do continue
 
         vel: ^c_Velocity = ecs.get_component(&t_Velocity, eid)
         transform: ^c_Transform = ecs.get_component(&t_Transform, eid)
@@ -254,6 +265,7 @@ init_comp_general :: proc(db: ^ecs.Database) {
     ecs.table_init(&t_TransformLookAt, db, 5000)
     ecs.table_init(&t_MovementStats, db, 5000)
     ecs.table_init(&t_Cullable, db, 5000)
+    ecs.table_init(&t_State, db, 5000)
 
     //Initialize views
     ecs.view_init(&v_SpriteRendering, db, {&t_SpriteRenderer, &t_Transform, &t_Cullable})

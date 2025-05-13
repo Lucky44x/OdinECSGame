@@ -26,6 +26,9 @@ s_resolve_collisions :: proc() {
     for ecs.iterator_next(&it_CollisionEvent) {
         eid := ecs.get_entity(&it_CollisionEvent)
 
+        state: ^c_State = ecs.get_component(&t_State, eid)
+        if !state^ do continue
+
         event: ^c_CollisionEvent = ecs.get_component(&t_CollisionEvent, eid)
         if event.entityA.ix == 0 || event.entityB.ix == 0 do continue
             

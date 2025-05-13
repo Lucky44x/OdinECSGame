@@ -34,6 +34,9 @@ s_gun_input :: proc() {
     for ecs.iterator_next(&it_GunInput) {
         eid := ecs.get_entity(&it_GunInput)
 
+        state: ^c_State = ecs.get_component(&t_State, eid)
+        if !state^ do continue
+
         input: ^c_GunInput = ecs.get_component(&t_GunInput, eid)
         stats: ^c_GunStats = ecs.get_component(&t_GunStats, eid)
         transform: ^c_Transform = ecs.get_component(&t_Transform, eid)
@@ -82,7 +85,7 @@ gun_create :: proc(
     gunDamage: f32
 ) -> ecs.entity_id {
     playerTransform := ecs.get_component(&t_Transform, playerID)
-    gunEntity := entity_create()
+    gunEntity := entity_create(true)
 
     gunTransform, _ := ecs.add_component(&t_Transform, gunEntity)
     gunTransform.origin = rl.Vector2{0.5 , 0}

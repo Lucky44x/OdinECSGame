@@ -36,6 +36,9 @@ s_collider_update :: proc() {
     for ecs.iterator_next(&it_ColliderUpdate) {
         eid := ecs.get_entity(&it_ColliderUpdate)
 
+        state: ^c_State = ecs.get_component(&t_State, eid)
+        if !state^ do continue
+
         transform: ^c_Transform = ecs.get_component(&t_Transform, eid)
         collider: ^c_Collider = ecs.get_component(&t_Collider, eid)
     
@@ -52,6 +55,9 @@ debug_draw_colliders :: proc() {
     for ecs.iterator_next(&it_ColliderUpdate) {
         eid := ecs.get_entity(&it_ColliderUpdate)
 
+        state: ^c_State = ecs.get_component(&t_State, eid)
+        if !state^ do continue
+
         collider: ^c_Collider = ecs.get_component(&t_Collider, eid)
         rl.DrawRectanglePro(collider.rect, {0,0}, 0, rl.Color{ 127, 106, 79, 125 })
     }
@@ -62,6 +68,9 @@ debug_draw_colliders :: proc() {
 s_collision_checker :: proc() {
     for ecs.iterator_next(&it_CollisionCheck) {
         eid := ecs.get_entity(&it_CollisionCheck)
+
+        state: ^c_State = ecs.get_component(&t_State, eid)
+        if !state^ do continue
 
         collider: ^c_Collider = ecs.get_component(&t_Collider, eid)
         collisionchecker: ^c_CollisionChecker = ecs.get_component(&t_CollisionChecker, eid)

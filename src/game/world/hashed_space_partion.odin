@@ -76,6 +76,9 @@ s_hash_entity_positions :: proc() {
     for ecs.iterator_next(&it_HashEntities) {
         eid := ecs.get_entity(&it_HashEntities)
 
+        state: ^c_State = ecs.get_component(&t_State, eid)
+        if !state^ do continue
+
         culled: ^c_Cullable = ecs.get_component(&t_Cullable, eid)
         if culled.culled do continue
 

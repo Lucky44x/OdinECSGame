@@ -33,7 +33,7 @@ bullet_create :: proc(
     startSpeed, damage, lifetime: f32,
     position, scale, direction: rl.Vector2
 ) -> (BulletId: ecs.entity_id) {
-    bulletEntity := entity_create()
+    bulletEntity := entity_create(true)
 
     bulletTransform, _ := ecs.add_component(&t_Transform, bulletEntity)
     bulletTransform.position = position

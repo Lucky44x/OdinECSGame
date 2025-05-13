@@ -17,6 +17,7 @@ pool_init :: proc(
     startFillSize, maxFillsize: int
 ) {
     self.builder = builder
+    self.db = db
     
     //TODO: Clear at deinit call
     self.entities = make([]ecs.entity_id, maxFillsize)
@@ -30,29 +31,36 @@ pool_init :: proc(
 pool_pop :: proc(
     self: ^Pool
 ) -> ecs.entity_id {
-    if self.count > 0 {
-        //Get the last element in Pool, remove inactive component and return out
-        self.count -= 1
-        
-        assert(self.db == nil)
+    poppedEID: ecs.entity_id
 
-        return self.entities[self.count]
+    if self.count <= 0 {
+        pool_push(self, self.builder())
     }
 
-    return self.builder()
+    self.count -= 1
+    poppedEID = self.entities[self.count]
+
+    state: ^c_State = ecs.get_component(&t_State, poppedEID)
+    state ^= true
+
+    return poppedEID
 }
 
 pool_push :: proc(
     self: ^Pool,
     entity: ecs.entity_id
 ) {
-    if self.db == nil do return
+    assert(self.db != nil, "The Database was not set for this Pool")
 
     //If pool has filled up, destroy entity to make space
     if self.count >= len(self.entities) {
         ecs.destroy_entity(self.db, entity)
         return
     }
+
+    //Change entity state to inactive
+    state: ^c_State = ecs.get_component(&t_State, entity)
+    state ^= false
 
     //Insert into pool
     self.entities[self.count] = entity

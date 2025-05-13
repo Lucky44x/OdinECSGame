@@ -36,6 +36,9 @@ s_movementInput :: proc() {
     for ecs.iterator_next(&it_PlayerMovement) {
         eid := ecs.get_entity(&it_PlayerMovement)
 
+        state: ^c_State = ecs.get_component(&t_State, eid)
+        if !state^ do continue
+
         velocity: ^c_Velocity = ecs.get_component(&t_Velocity, eid)
         input: ^c_MovementInput = ecs.get_component(&t_MovementInput, eid)
         stats: ^c_MovementStats = ecs.get_component(&t_MovementStats, eid)
@@ -84,7 +87,7 @@ player_create :: proc(
     startPosition, startScale: rl.Vector2,
     baseSpeed, baseHealth, baseDamage: f32
 ) -> (playerID, gunID: ecs.entity_id) {
-    playerEntity := entity_create()
+    playerEntity := entity_create(true)
 
     playerTransform, _ := ecs.add_component(&t_Transform, playerEntity)
     playerTransform.position = startPosition

@@ -49,6 +49,9 @@ s_do_enemy_boid_movement :: proc() {
     for ecs.iterator_next(&it_EnemyMovement) {
         eid := ecs.get_entity(&it_EnemyMovement)
 
+        state: ^c_State = ecs.get_component(&t_State, eid)
+        if !state^ do continue
+
         movementStats: ^c_MovementStats = ecs.get_component(&t_MovementStats, eid)
         boidParticle: ^c_BoidParticle = ecs.get_component(&t_BoidParticle, eid)
         velocity: ^c_Velocity = ecs.get_component(&t_Velocity, eid)
@@ -85,6 +88,8 @@ enemy_spawn :: proc(
 ) {
     enemy_entity := pool_pop(&EnemiesPool)
 
+    fmt.printfln("Spawned entity: %i", enemy_entity)
+
     enemyTransform: ^c_Transform = ecs.get_component(&t_Transform, enemy_entity)
     enemyTransform.position = startPosition
     enemyTransform.scale = startScale
@@ -113,6 +118,8 @@ enemy_spawn :: proc(
     enemyCollider: ^c_Collider = ecs.get_component(&t_Collider, enemy_entity)
     enemyCollider.offX = (enemyTransform.scale[0] / 2)
     enemyCollider.offY = (enemyTransform.scale[1] / 2)
+
+    ecs.rebuild(&v_EnemyMovement)
 }
 
 /*
@@ -131,5 +138,8 @@ enemy_build :: proc() -> ecs.entity_id {
     stats, _ := ecs.add_component(&t_EnemyStats, enemyEntity) 
     boid, _ := ecs.add_component(&t_BoidParticle, enemyEntity)
     collider, _ := ecs.add_component(&t_Collider, enemyEntity)
+
+    fmt.printfln("Built enemy: %i", enemyEntity)
+
     return enemyEntity
 }
