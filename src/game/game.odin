@@ -2,6 +2,7 @@ package game
 
 import rl "vendor:raylib"
 import "world"
+import "debug"
 
 /*
 Initializes the Game Window with the provided with and height using Raylib
@@ -14,6 +15,8 @@ init_game_window :: proc(
     rl.InitWindow(width, height, title)
     rl.SetExitKey(.KEY_NULL)
     rl.SetTargetFPS(60)
+
+    when ODIN_DEBUG do debug.init_spawn_menu()
 
     world.init_world()
 }
@@ -28,6 +31,10 @@ start_game_loop :: proc() {
     //rl.SetTargetFPS(60)
 
     for !rl.WindowShouldClose() {
+
+        //Spawn menu
+        when ODIN_DEBUG do debug.update_spawn_menu()
+
         //Do Logic
         world.do_logic_systems()
 
@@ -38,6 +45,9 @@ start_game_loop :: proc() {
         world.do_drawing_systems()
 
         when ODIN_DEBUG {
+            //Spawn Menu
+            debug.draw_spawn_menu()
+
             rl.DrawText("DEBUG", 25, 25, 25, rl.BLACK)
             rl.DrawText(rl.TextFormat("FPS: %i", (i32)(1/rl.GetFrameTime())), 25, 50, 25, rl.BLACK)
         }

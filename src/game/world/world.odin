@@ -5,6 +5,9 @@ import rl "vendor:raylib"
 
 @(private="file") ecs_world: ecs.Database
 
+global_player_transform_ref: ^c_Transform
+global_player_entity_id: ecs.entity_id
+
 /*
 Initialize World, as well as all ECS-Related Structures in the background
 */
@@ -25,26 +28,26 @@ init_world :: proc() {
     init_comp_collision_resolution(&ecs_world)
 
     //Init the rest of the world
-    playerID, _ := player_create({100,100}, {25,25}, 5, 5, 5)
-    playerTransform: ^c_Transform = ecs.get_component(&t_Transform, playerID)
+    global_player_entity_id, _= player_create({100,100}, {25,25}, 5, 5, 5)
+    global_player_transform_ref = ecs.get_component(&t_Transform, global_player_entity_id)
 
     //Create enemies
-    enemy_spawn({500, 250}, {25, 25}, 5, playerTransform)
-    enemy_spawn({550, 250}, {25, 25}, 5, playerTransform)
-    enemy_spawn({600, 250}, {25, 25}, 5, playerTransform)
-    enemy_spawn({650, 250}, {25, 25}, 5, playerTransform)
-    enemy_spawn({500, 300}, {25, 25}, 5, playerTransform)
-    enemy_spawn({550, 300}, {25, 25}, 5, playerTransform)
-    enemy_spawn({600, 300}, {25, 25}, 5, playerTransform)
-    enemy_spawn({650, 300}, {25, 25}, 5, playerTransform)
-    enemy_spawn({500, 350}, {25, 25}, 5, playerTransform)
-    enemy_spawn({550, 350}, {25, 25}, 5, playerTransform)
-    enemy_spawn({600, 350}, {25, 25}, 5, playerTransform)
-    enemy_spawn({650, 350}, {25, 25}, 5, playerTransform)
-    enemy_spawn({500, 400}, {25, 25}, 5, playerTransform)
-    enemy_spawn({550, 400}, {25, 25}, 5, playerTransform)
-    enemy_spawn({600, 400}, {25, 25}, 5, playerTransform)
-    enemy_spawn({650, 400}, {25, 25}, 5, playerTransform)
+    enemy_spawn({500, 250}, {25, 25}, 5, global_player_transform_ref)
+    enemy_spawn({550, 250}, {25, 25}, 5, global_player_transform_ref)
+    enemy_spawn({600, 250}, {25, 25}, 5, global_player_transform_ref)
+    enemy_spawn({650, 250}, {25, 25}, 5, global_player_transform_ref)
+    enemy_spawn({500, 300}, {25, 25}, 5, global_player_transform_ref)
+    enemy_spawn({550, 300}, {25, 25}, 5, global_player_transform_ref)
+    enemy_spawn({600, 300}, {25, 25}, 5, global_player_transform_ref)
+    enemy_spawn({650, 300}, {25, 25}, 5, global_player_transform_ref)
+    enemy_spawn({500, 350}, {25, 25}, 5, global_player_transform_ref)
+    enemy_spawn({550, 350}, {25, 25}, 5, global_player_transform_ref)
+    enemy_spawn({600, 350}, {25, 25}, 5, global_player_transform_ref)
+    enemy_spawn({650, 350}, {25, 25}, 5, global_player_transform_ref)
+    enemy_spawn({500, 400}, {25, 25}, 5, global_player_transform_ref)
+    enemy_spawn({550, 400}, {25, 25}, 5, global_player_transform_ref)
+    enemy_spawn({600, 400}, {25, 25}, 5, global_player_transform_ref)
+    enemy_spawn({650, 400}, {25, 25}, 5, global_player_transform_ref)
 }
 
 /*
