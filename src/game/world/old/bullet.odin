@@ -6,13 +6,7 @@ import "../../resource"
 import ecs "../../../libs/ode_ecs"
 
 //Components
-@(private="file")
-c_BulletStats :: struct {
-    speed, damage, lifetime, max_lifetime: f32
-}
 
-//Tables
-@(private="file") t_BulletStats: ecs.Table(c_BulletStats)
 
 //Views
 

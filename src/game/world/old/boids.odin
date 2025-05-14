@@ -11,15 +11,7 @@ import "core:fmt"
 @(private="file") ALIGNMENT_WEIGHT :: 1
 @(private="file") PLAYER_WEIGHT :: 0.25
 //Components
-@(private)
-c_BoidParticle :: struct {
-    player_transform: ^c_Transform,
-    steering_vector: rl.Vector2,
-    //player_weight, alignment_weight, cohesion_weight, seperation_weight, perception_radius, player_perception_radius: f32
-}
 
-//Tables
-@(private) t_BoidParticle: ecs.Table(c_BoidParticle)
 
 //Views
 @(private="file") v_Boids: ecs.View

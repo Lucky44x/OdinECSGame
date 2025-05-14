@@ -6,8 +6,10 @@ import "core:path/filepath"
 import "core:strings"
 import "core:mem"
 
+import types "../datatypes"
+
 @(private)
-AnimationRegistry: Registry(AnimationClip)
+AnimationRegistry: types.Registry(AnimationClip)
 
 AnimationClip :: struct {
     frameTime, frameCount: i32,
@@ -26,7 +28,7 @@ LoadAnimation :: proc {
 Returns the requested Animation reference, or nil, if none was found
 */
 GetAnimation :: proc(animationID: cstring) -> ^AnimationClip {
-    ref, _ := registry_get(&AnimationRegistry, animationID)
+    ref, _ := types.registry_get(&AnimationRegistry, animationID)
     return ref
 }
 
@@ -49,10 +51,10 @@ LoadFrameAnimation :: proc (
     frameCount, frameTime: i32
 ) -> ^AnimationClip {
     //First check if we are trying to add an already existing element
-    alreadyLoaded, _ := registry_has(&AnimationRegistry, animationName)
+    alreadyLoaded, _ := types.registry_has(&AnimationRegistry, animationName)
     //If so, return its reference
     if alreadyLoaded {
-        ref, _ := registry_get(&AnimationRegistry, animationName)
+        ref, _ := types.registry_get(&AnimationRegistry, animationName)
         return ref
     }
 
@@ -70,7 +72,7 @@ LoadFrameAnimation :: proc (
     }
 
     //All frames added to clip, lkoad into registry
-    ref, _ := registry_put(&AnimationRegistry, animationName, newAnimation)
+    ref, _ := types.registry_put(&AnimationRegistry, animationName, newAnimation)
     return ref
 }
 
@@ -86,10 +88,10 @@ LoadSheetAnimation :: proc (
     incrY: i32 = 0
 ) -> ^AnimationClip {
     //First check if we are trying to add an already existing element
-    alreadyLoaded, _ := registry_has(&AnimationRegistry, animationName)
+    alreadyLoaded, _ := types.registry_has(&AnimationRegistry, animationName)
     //If so, return its reference
     if alreadyLoaded {
-        ref, _ := registry_get(&AnimationRegistry, animationName)
+        ref, _ := types.registry_get(&AnimationRegistry, animationName)
         return ref
     }
 
@@ -112,7 +114,7 @@ LoadSheetAnimation :: proc (
     }
 
     //All frames added to clip, load into registry
-    ref, _ := registry_put(&AnimationRegistry, animationName, newAnimation)
+    ref, _ := types.registry_put(&AnimationRegistry, animationName, newAnimation)
     return ref
 }
 

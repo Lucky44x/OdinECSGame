@@ -8,14 +8,10 @@ import ecs "../../../libs/ode_ecs"
 
 //Components
 @(private="file")
-c_GunStats :: struct {
-    durabillity, rpm, spread, bulletSpeed, gunDamage: f32
-}
+
 
 @(private="file")
-c_GunInput :: struct {
-    shootKey: rl.MouseButton
-}
+
 
 //Tables
 @(private="file") t_GunStats: ecs.Table(c_GunStats)

@@ -1,10 +1,9 @@
-package resource
+package datatypes
 
 /**
     Originally this was supposed to use a map[string]T, but I decided to go with cstring in this case, since it will almost exclusively handle raylib stuff
 **/
 
-@(private)
 Registry :: struct($T: typeid) {
     items: map[cstring]T,
     deletionHandler: proc(^T),
@@ -14,8 +13,7 @@ Registry :: struct($T: typeid) {
 /*
 Will initialize the provided registry with a cap of "cap" items
 */
-@(private)
-registry_create :: proc(
+registry_init :: proc(
     self: ^Registry($T),
     deletionHandler: proc(^T),
     cap: int = 200, 
@@ -33,7 +31,6 @@ registry_create :: proc(
 /*
 Will destroy the provided registry after calling the DeletinHandler for all its contents
 */
-@(private)
 registry_destroy :: proc(
     self: ^Registry($T),
     loc := #caller_location
@@ -55,7 +52,6 @@ Will put the provided item into the registry with the provided identifier
 Will throw an error when identifier already exists...
 Duplication safety is for the user to consider
 */
-@(private)
 registry_put :: proc(
     self: ^Registry($T),
     key: cstring,
@@ -73,7 +69,6 @@ registry_put :: proc(
 Returns a pointer reference to the requested entry, should it exist.
 If it doesnt this function will throw an error
 */
-@(private)
 registry_get :: proc(
     self: ^Registry($T),
     key: cstring
@@ -88,7 +83,6 @@ registry_get :: proc(
 /*
 Will return true when the requested entry is present inside the registry
 */
-@(private)
 registry_has :: proc(
     self: ^Registry($T),
     key: cstring

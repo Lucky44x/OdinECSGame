@@ -10,14 +10,10 @@ import ecs "../../../libs/ode_ecs"
 
 //Components
 @(private="file")
-c_PlayerStats :: struct {
-    currentHealth, maxHealth, damage: f32
-}
+
 
 @(private="file")
-c_MovementInput :: struct {
-    forwardKey, backwardKey, leftKey, rightKey: rl.KeyboardKey
-}
+
 
 //Tables
 @(private="file") t_PlayerStats: ecs.Table(c_PlayerStats)

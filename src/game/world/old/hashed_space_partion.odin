@@ -60,9 +60,7 @@ Bucket :: struct {
 //ECS
 
 //Components
-c_HashableEntity :: struct{
-    type: bit_set[EntityType]
-}
+
 
 //Tables
 t_HashableEntity: ecs.Table(c_HashableEntity)

@@ -8,51 +8,10 @@ import ecs "../../../libs/ode_ecs"
 import "core:fmt"
 
 // General Datatypes
-LookatTarget :: union {
-    LookatMouse,
-    LookatTransform
-}
-
-LookatMouse :: struct{}
-LookatTransform :: ^c_Transform
 
 // Component DEFS
-c_MovementStats :: struct {
-    speed, acceleration: f32
-}
 
-c_Transform :: struct {
-    position, scale, origin: rl.Vector2,
-    rotation: f32
-}
 
-c_TransformChild :: struct {
-    offsetPosition, offsetScale: rl.Vector2,
-    offsetRotation: f32,
-    parent: ^c_Transform
-}
-
-c_TransformLookAt :: struct {
-    target: LookatTarget
-}
-
-c_Velocity :: struct {
-    velocity: rl.Vector2,
-    angular_velocity: rl.Vector2,
-    deceleration_coeff: f32
-}
-
-c_SpriteRenderer :: struct {
-    flipX, flipY: bool,
-    sprite: resource.Renderable,
-    color: rl.Color
-}
-
-c_Cullable :: struct{
-    culled: bool
-}
-
-c_State :: bool
 
 // Table DEFS
 t_Transform: ecs.Table(c_Transform)

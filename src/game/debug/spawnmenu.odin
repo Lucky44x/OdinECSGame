@@ -145,6 +145,6 @@ close_spawn_menu :: proc(x, y: f32) {
 @(private="file")
 spawn_enemy :: proc(x, y: f32) {
     //Just spawn an enemy
-    world.enemy_spawn(rl.Vector2{x,y}, {25, 25}, 5, world.global_player_transform_ref)
+    //world.enemy_spawn(rl.Vector2{x,y}, {25, 25}, 5, world.global_player_transform_ref)
     close_spawn_menu(x,y)
 }

@@ -33,9 +33,7 @@ EnemiesPool: Pool
 
 //Components
 @(private="file")
-c_EnemyStats :: struct {
-    health: f32
-}
+
 
 //Tables
 @(private="file") t_EnemyStats: ecs.Table(c_EnemyStats)

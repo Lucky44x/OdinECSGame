@@ -4,21 +4,7 @@ import ecs "../../../libs/ode_ecs"
 import rl "vendor:raylib"
 import "core:fmt"
 
-//General Data
-CollisionType :: enum {
-    KinematicCollision,
-    BoxCastCollision
-}
 
-//Components
-c_Collider :: struct{
-    offX, offY, offW, offH: f32,
-    rect: rl.Rectangle
-}
-
-c_CollisionChecker :: struct{
-    type: CollisionType
-}
 
 //Table
 t_Collider: ecs.Table(c_Collider)
