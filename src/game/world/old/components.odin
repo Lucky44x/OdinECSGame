@@ -167,49 +167,7 @@ s_transform_lookat_target :: proc() {
     ecs.iterator_reset(&it_TransformLookat)
 }
 
-/*
-Moves every Transform by its Velocity Vector
-*/
-s_apply_velocity :: proc() {
-    for ecs.iterator_next(&it_VelocityApplication) {
-        eid := ecs.get_entity(&it_VelocityApplication)
 
-        state: ^c_State = ecs.get_component(&t_State, eid)
-        if !state^ do continue
-
-        vel: ^c_Velocity = ecs.get_component(&t_Velocity, eid)
-        transform: ^c_Transform = ecs.get_component(&t_Transform, eid)
-
-        transform.position += vel.velocity
-        vel.velocity *= vel.deceleration_coeff
-    }
-
-    ecs.iterator_reset(&it_VelocityApplication)
-}
-
-/*
-Sets the respective entities to be culled, when outside view-frustum (as described in camera.odin)
-*/
-s_cull_entities :: proc() {
-    for ecs.iterator_next(&it_CullingSystem) {
-        eid := ecs.get_entity(&it_CullingSystem)
-
-        cullingData: ^c_Cullable = ecs.get_component(&t_Cullable, eid)
-        transform: ^c_Transform = ecs.get_component(&t_Transform, eid)
-
-        targetRect := rl.Rectangle{
-            x = transform.position[0],
-            y = transform.position[1],
-            width = transform.scale[0],
-            height = transform.scale[1]
-        }
-
-        if rl.CheckCollisionRecs(CameraFrustum, targetRect) do cullingData.culled = false
-        else do cullingData.culled = true
-    }
-
-    ecs.iterator_reset(&it_CullingSystem)
-}
 
 //General Functions
 /*

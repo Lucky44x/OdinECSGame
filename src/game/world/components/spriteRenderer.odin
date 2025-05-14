@@ -12,3 +12,5 @@ c_SpriteRenderer :: struct {
     sprite: resource.Renderable,
     color: rl.Color
 }
+
+t_SpriteRenderer: ecs.Table(c_SpriteRenderer)
