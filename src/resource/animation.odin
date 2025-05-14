@@ -9,7 +9,7 @@ import "core:mem"
 import types "../datatypes"
 
 @(private)
-AnimationRegistry: types.Registry(AnimationClip)
+AnimationRegistry: types.Registry(cstring, AnimationClip)
 
 AnimationClip :: struct {
     frameTime, frameCount: i32,

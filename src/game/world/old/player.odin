@@ -25,43 +25,6 @@ import ecs "../../../libs/ode_ecs"
 
 //Systems
 
-/*
-Handles movement Input and lerps the players velocity vector towards the desired movement vector
-*/
-s_movementInput :: proc() {
-    for ecs.iterator_next(&it_PlayerMovement) {
-        eid := ecs.get_entity(&it_PlayerMovement)
-
-        state: ^c_State = ecs.get_component(&t_State, eid)
-        if !state^ do continue
-
-        velocity: ^c_Velocity = ecs.get_component(&t_Velocity, eid)
-        input: ^c_MovementInput = ecs.get_component(&t_MovementInput, eid)
-        stats: ^c_MovementStats = ecs.get_component(&t_MovementStats, eid)
-
-        input_vec: rl.Vector2 = { 0,0 }
-
-        if rl.IsKeyDown(input.forwardKey) {
-            input_vec[1] = -1
-        } else if rl.IsKeyDown(input.backwardKey) {
-            input_vec[1] = 1
-        }
-
-        if rl.IsKeyDown(input.rightKey) {
-            input_vec[0] = 1
-        } else if rl.IsKeyDown(input.leftKey) {
-            input_vec[0] = -1
-        }
-
-        input_vec_norm := rl.Vector2Normalize(input_vec)
-        movement := input_vec_norm * stats.speed
-
-        velocity.velocity = linalg.lerp(velocity.velocity, movement, rl.GetFrameTime() * stats.acceleration * MOVEMENT_SCALAR)
-    }
-
-    ecs.iterator_reset(&it_PlayerMovement)
-}
-
 //General functions
 /*
 Initializes the player-specific component Tables

@@ -4,8 +4,18 @@ import ecs "../../../../libs/ode_ecs"
 import rl "vendor:raylib"
 import comp "../components"
 
+@(private="file")
 v_apply_velocity: ecs.View
+@(private="file")
 it_apply_velocity: ecs.Iterator
+
+@(private)
+init_s_apply_velocity :: proc(
+    db: ^ecs.Database
+) {
+    ecs.view_init(&v_apply_velocity, db, { &comp.t_Velocity, &comp.t_Transform })
+    ecs.iterator_init(&it_apply_velocity, &v_apply_velocity)
+}
 
 /*
 Moves every Transform by its Velocity Vector

@@ -4,13 +4,25 @@ import ecs "../../../../libs/ode_ecs"
 import rl "vendor:raylib"
 import comp "../components"
 
+@(private="file")
 v_cull_entities: ecs.View
+@(private="file")
 it_cull_entities: ecs.Iterator
+
+@(private)
+init_s_cull_entities:: proc(
+    db: ^ecs.Database
+) {
+    ecs.view_init(&v_cull_entities, db, { &comp.t_Cullable, &comp.t_Transform })
+    ecs.iterator_init(&it_cull_entities, &v_cull_entities)
+}
 
 /*
 Sets the respective entities to be culled, when outside the provided view-frustum
 */
-s_cull_entities :: proc(frustum: rl.Rectangle) {
+s_cull_entities :: proc(
+    frustum: rl.Rectangle
+) {
     for ecs.iterator_next(&it_cull_entities) {
         eid := ecs.get_entity(&it_cull_entities)
 

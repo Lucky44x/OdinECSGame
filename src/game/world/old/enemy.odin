@@ -42,28 +42,6 @@ EnemiesPool: Pool
 @(private="file") v_EnemyMovement: ecs.View
 @(private="file") it_EnemyMovement: ecs.Iterator
 
-//Systems
-s_do_enemy_boid_movement :: proc() {
-    for ecs.iterator_next(&it_EnemyMovement) {
-        eid := ecs.get_entity(&it_EnemyMovement)
-
-        state: ^c_State = ecs.get_component(&t_State, eid)
-        if !state^ do continue
-
-        movementStats: ^c_MovementStats = ecs.get_component(&t_MovementStats, eid)
-        boidParticle: ^c_BoidParticle = ecs.get_component(&t_BoidParticle, eid)
-        velocity: ^c_Velocity = ecs.get_component(&t_Velocity, eid)
-
-        movement := rl.Vector2ClampValue(boidParticle.steering_vector, -movementStats.speed, movementStats.speed) //* movementStats.speed
-
-        //fmt.printfln("%v", boidParticle.steering_vector)
-
-        velocity.velocity = linalg.lerp(velocity.velocity, movement, rl.GetFrameTime() * movementStats.acceleration * MOVEMENT_SCALAR_ENEMY)
-    }
-
-    ecs.iterator_reset(&it_EnemyMovement)
-}
-
 //General Functions
 init_comp_enemy :: proc(
     db: ^ecs.Database

@@ -6,7 +6,15 @@ import comp "../components"
 init_systems :: proc(
     db: ^ecs.Database
 ) {
-
+    init_s_apply_velocity(db)
+    init_s_boids_apply_movement(db)
+    init_s_boids_update(db)
+    init_s_children_transform_update(db)
+    init_s_cull_entities(db)
+    init_s_gun_input(db)
+    init_s_movement_input(db)
+    init_s_sprite_renderer_render(db)
+    init_s_transform_lookat_target(db)
 }
 
 @(private)

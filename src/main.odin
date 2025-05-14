@@ -26,6 +26,9 @@ main :: proc() {
     */
     game.start_game_loop()
 
+    //Destroy registries
+    resource.destroy_registries()
+
     //Deinitialize DEBUG components
     when ODIN_DEBUG {
         if len(tracking_alloc.bad_free_array) > 0 {
@@ -46,9 +49,6 @@ main :: proc() {
 
     //Close Window
     game.close_game_window()
-
-    //Destroy registries
-    resource.destroy_registries()
 
     //END OF PROGRAM
 }

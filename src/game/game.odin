@@ -36,13 +36,13 @@ start_game_loop :: proc() {
         when ODIN_DEBUG do debug.update_spawn_menu()
 
         //Do Logic
-        //world.do_logic_systems()
+        world.run_update_systems()
 
         //Do Drawing
         rl.BeginDrawing()
         rl.ClearBackground(rl.WHITE)
         
-        //world.do_drawing_systems()
+        world.run_drawing_systems()
 
         when ODIN_DEBUG {
             //Spawn Menu
@@ -58,8 +58,6 @@ start_game_loop :: proc() {
 
         free_all(context.temp_allocator)
     }
-
-    //world.deinit_world()
 }
 
 /*

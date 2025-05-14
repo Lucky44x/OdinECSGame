@@ -23,42 +23,6 @@ import ecs "../../../libs/ode_ecs"
 
 //Systems
 
-/*
-Handle the Gun Input and Shooting behaviour
-*/
-s_gun_input :: proc() {
-    for ecs.iterator_next(&it_GunInput) {
-        eid := ecs.get_entity(&it_GunInput)
-
-        state: ^c_State = ecs.get_component(&t_State, eid)
-        if !state^ do continue
-
-        input: ^c_GunInput = ecs.get_component(&t_GunInput, eid)
-        stats: ^c_GunStats = ecs.get_component(&t_GunStats, eid)
-        transform: ^c_Transform = ecs.get_component(&t_Transform, eid)
-
-        if !rl.IsMouseButtonPressed(input.shootKey) do continue
-
-        camera_shake({
-            magnitude = 5,
-            duration = 0.25
-        })
-
-        dir := (rl.GetMousePosition() + GameCamera.target) - transform.position
-
-        bullet_create(
-            stats.bulletSpeed,
-            stats.gunDamage,
-            45,
-            transform.position,
-            {5, 5},
-            dir
-        )
-    }
-
-    ecs.iterator_reset(&it_GunInput)
-}
-
 //General functions
 /*
 Initializes the gun-specific component Tables

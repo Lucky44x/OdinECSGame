@@ -9,7 +9,7 @@ import "core:mem"
 import types "../datatypes"
 
 @(private)
-TextureRegistry: types.Registry(rl.Texture2D)
+TextureRegistry: types.Registry(cstring, rl.Texture2D)
 
 /*
 Will load a Texture2D into the internal TextureRegistry, allowing the game to use it.

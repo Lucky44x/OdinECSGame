@@ -43,5 +43,4 @@ Destroys all Registires and their contents inside the Data System
 destroy_registries :: proc() {
     types.registry_destroy(&AnimationRegistry)
     types.registry_destroy(&TextureRegistry)
-    //registry_destroy(&ModifierRegistry)
 }

@@ -4,8 +4,8 @@ package datatypes
     Originally this was supposed to use a map[string]T, but I decided to go with cstring in this case, since it will almost exclusively handle raylib stuff
 **/
 
-Registry :: struct($T: typeid) {
-    items: map[cstring]T,
+Registry :: struct($K, $T: typeid) {
+    items: map[K]T,
     deletionHandler: proc(^T),
     isInitialized: bool
 }
@@ -14,7 +14,7 @@ Registry :: struct($T: typeid) {
 Will initialize the provided registry with a cap of "cap" items
 */
 registry_init :: proc(
-    self: ^Registry($T),
+    self: ^Registry($K, $T),
     deletionHandler: proc(^T),
     cap: int = 200, 
     loc := #caller_location
@@ -22,7 +22,7 @@ registry_init :: proc(
     if self == nil do return RegistryError.Registry_Cannot_Be_Nil
     if cap <= 0 do return RegistryError.RegistryCap_Should_Be_Greater_Than_Zero
 
-    self.items = make_map_cap(map[cstring]T, cap, context.allocator, loc) or_return
+    self.items = make_map_cap(map[K]T, cap, context.allocator, loc) or_return
     self.deletionHandler = deletionHandler
     self.isInitialized = true
     return nil
@@ -32,7 +32,7 @@ registry_init :: proc(
 Will destroy the provided registry after calling the DeletinHandler for all its contents
 */
 registry_destroy :: proc(
-    self: ^Registry($T),
+    self: ^Registry($K, $T),
     loc := #caller_location
 ) -> Error {
     if self == nil do return RegistryError.Registry_Cannot_Be_Nil
@@ -53,8 +53,8 @@ Will throw an error when identifier already exists...
 Duplication safety is for the user to consider
 */
 registry_put :: proc(
-    self: ^Registry($T),
-    key: cstring,
+    self: ^Registry($K, $T),
+    key: K,
     value: T
 ) -> (^T, Error) {
     if self == nil do return nil, RegistryError.Registry_Cannot_Be_Nil
@@ -70,8 +70,8 @@ Returns a pointer reference to the requested entry, should it exist.
 If it doesnt this function will throw an error
 */
 registry_get :: proc(
-    self: ^Registry($T),
-    key: cstring
+    self: ^Registry($K, $T),
+    key: K
 ) -> (^T, Error) {
     if self == nil do return nil, RegistryError.Registry_Cannot_Be_Nil
     if !self.isInitialized do return nil, RegistryError.Registry_Not_Initialized
@@ -84,8 +84,8 @@ registry_get :: proc(
 Will return true when the requested entry is present inside the registry
 */
 registry_has :: proc(
-    self: ^Registry($T),
-    key: cstring
+    self: ^Registry($K, $T),
+    key: K
 ) -> (bool, Error) {
     if self == nil do return false, RegistryError.Registry_Cannot_Be_Nil
     if !self.isInitialized do return false, RegistryError.Registry_Not_Initialized
