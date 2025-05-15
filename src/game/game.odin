@@ -18,7 +18,7 @@ init_game_window :: proc(
 
     when ODIN_DEBUG do debug.init_spawn_menu()
 
-    //world.init_world()
+    world.init_world()
 }
 
 /*

@@ -24,7 +24,7 @@ init_s_movement_input :: proc(
 /*
 Handles movement Input and lerps the players velocity vector towards the desired movement vector
 */
-s_movementInput :: proc() {
+s_movement_input :: proc() {
     for ecs.iterator_next(&it_movement_input) {
         eid := ecs.get_entity(&it_movement_input)
 
