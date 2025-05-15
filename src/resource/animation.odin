@@ -6,7 +6,7 @@ import "core:path/filepath"
 import "core:strings"
 import "core:mem"
 
-import types "../datatypes"
+import types "../../libs/datatypes"
 
 @(private)
 AnimationRegistry: types.Registry(cstring, AnimationClip)

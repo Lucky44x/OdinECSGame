@@ -1,8 +1,6 @@
 package world
 
-import "components"
-import "entities"
-import "systems"
+import eng "../../../libs/engine"
 
 import ecs "../../../libs/ode_ecs"
 import rl "vendor:raylib"
@@ -15,19 +13,17 @@ ECS_WORLD: ecs.Database
 
 init_world :: proc() {
     ecs.init(&ECS_WORLD, 5000)
-
-    components.init_components(&ECS_WORLD, 5000)
-    systems.init_systems(&ECS_WORLD)
 }
 
 run_update_systems :: proc() {
     //Update Camera
     camera_update()
 
+    /*
     //Input phase
     systems.s_gun_input(
         GameCamera.offset,
-        camera_shake,
+        camera_shake_values,
         nil
     )
     systems.s_movementInput()
@@ -52,12 +48,11 @@ run_update_systems :: proc() {
 
     //Collision Phase
     //TODO: IMPLEMENT
+    */
 }
 
 run_drawing_systems :: proc() {
     rl.BeginMode2D(GameCamera)
-
-    systems.s_sprite_renderer_render()
 
     rl.EndMode2D()
 

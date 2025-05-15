@@ -8,7 +8,7 @@ import "core:mem"
 import "core:os"
 import "base:runtime"
 
-import types "../datatypes"
+import types "../../libs/datatypes"
 
 //Common DataTypes
 Renderable :: union {

@@ -6,7 +6,7 @@ import "core:path/filepath"
 import "core:strings"
 import "core:mem"
 
-import types "../datatypes"
+import types "../../libs/datatypes"
 
 @(private)
 TextureRegistry: types.Registry(cstring, rl.Texture2D)

@@ -33,10 +33,12 @@ as long as there is currently no shake running
 
 (set duration <= -1 to make it infinite until stop_shake is called)
 */
+/*
 camera_shake :: proc {
     camera_shake_values,
     camera_shake_struct
 }
+*/
 
 camera_shake_values :: proc(
     duration, magnitude: f32
