@@ -1,9 +1,6 @@
 [submodule "libs/ode_ecs"]
 	path = libs/ode_ecs
 	url = https://github.com/odin-engine/ode_ecs.git
-[submodule "libs/engine"]
-	path = libs/engine
-	url = https://github.com/Lucky44x/OdinECSGameFramework.git
 [submodule "libs/datatypes"]
 	path = libs/datatypes
 	url = https://github.com/Lucky44x/OdinStructures.git
