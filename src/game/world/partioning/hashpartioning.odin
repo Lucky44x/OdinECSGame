@@ -3,6 +3,7 @@ package partioning
 import rl "vendor:raylib"
 import ecs "../../../../libs/ode_ecs"
 import vmem "core:mem/virtual"
+import types "../../../../libs/datatypes"
 import "core:mem"
 import "core:fmt"
 
@@ -13,14 +14,21 @@ import "../tagging"
 
 //GENERAL
 
-//General Data
+MAX_ENTITIES_PER_BUCKET :: 1024
+MAX_FREE_BUCKETS :: 256
 
-/*
-@(private="file") BUCKET_WIDTH :: 128
-@(private="file") BUCKET_HEIGHT :: 128
-@(private="file") BUCKET_CAPACITY :: 1024
-@(private="file") MAX_FREE_BUCKETS :: 256
-@(private="file") BUCKET_LIFETIME :: 120
+HashedPartionMap :: struct {
+    buckeWidth, bucketHeight, bucketLifetime: i32,
+    freeBucketPool: types.Pool(^HashBucket, MAX_FREE_BUCKETS)
+}
+
+@(private="file")
+HashBucket :: struct {
+    count: u32,
+    capcity: u32,
+    entities: #soa[]EntityDescriptor,
+    empty_frame_counter: u8
+}
 
 @(private="file")
 EntityDescriptor :: struct {
@@ -31,13 +39,40 @@ EntityDescriptor :: struct {
     tags: tagging.TagContainer
 }
 
-@(private="file")
-Bucket :: struct {
-    count: u32,
-    capacity: u32,
-    entities: #soa[]EntityDescriptor,
-    empty_frame_counter: u8
+init_spatial_hashing :: proc(
+    self: ^HashedPartionMap
+) {
+    types.pool_init(
+        &self.freeBucketPool, 
+        10, 
+        build_hash_bucket,
+        destroy_hash_bucket
+    )
 }
+
+//TODO: When Pulling from Pool, make sure to reset the counter in the corresponiding Bucket
+
+build_hash_bucket :: proc() -> ^HashBucket {
+    newBucket, err := new(HashBucket)
+    newBucket.entities = make(#soa[]EntityDescriptor, MAX_ENTITIES_PER_BUCKET)
+    return newBucket
+}
+
+destroy_hash_bucket :: proc(
+    bucket: ^HashBucket
+) {
+    delete(bucket.entities)
+    free(bucket)
+}
+
+//General Data
+
+/*
+@(private="file") BUCKET_WIDTH :: 128
+@(private="file") BUCKET_HEIGHT :: 128
+@(private="file") BUCKET_CAPACITY :: 1024
+@(private="file") MAX_FREE_BUCKETS :: 256
+@(private="file") BUCKET_LIFETIME :: 120
 
 @(private="file") dynamicFreeList: []#soa[]EntityDescriptor
 @(private="file") freeListCount: u32

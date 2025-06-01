@@ -1,0 +1,14 @@
+[
+  {
+    "label": "Run Project",
+    "command": "odin run \"src\"",
+    "use_new_terminal": true,
+    "shell": "system"
+  },
+  {
+    "label": "Run Project Debug",
+    "command": "odin run \"src\" -debug",
+    "use_new_terminal": true,
+    "shell": "system"
+  }
+]

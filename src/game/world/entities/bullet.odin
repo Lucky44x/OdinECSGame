@@ -7,12 +7,11 @@ import "../../../resource"
 import types "../../../../libs/datatypes"
 
 @(private="file")
-BulletPool: types.Pool(ecs.entity_id)
+BulletPool: types.Pool(ecs.entity_id, 1024)
 
 init_bullet :: proc() {
     types.pool_init(
         &BulletPool,
-        1024,
         15,
         build_bullet,
         destroy_bullet
