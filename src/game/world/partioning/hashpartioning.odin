@@ -73,7 +73,6 @@ deinit_spatial_partitioning :: proc(
     delete(self.bucketMap)
 }
 
-//TODO: Weird memory leak fix later
 build_hash_bucket :: proc() -> ^HashBucket {
     newBucket, err := new(HashBucket)
     newBucket.entities = make(#soa[]EntityDescriptor, MAX_ENTITIES_PER_BUCKET)
