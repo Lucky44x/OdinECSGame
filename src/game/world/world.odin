@@ -6,15 +6,22 @@ import rl "vendor:raylib"
 import "components"
 import "systems"
 import "entities"
+import "partioning"
 
 /*
 TODO: Implement some way to have different world descriptors
 */
 
 ECS_WORLD: ecs.Database
+WORLD_PARTITION: partioning.HashedPartionMap
 
 init_world :: proc() {
     ecs.init(&ECS_WORLD, 5000)
+    partioning.init_spatial_hashing(
+        &WORLD_PARTITION,
+        128, 128,
+        120
+    )
 
     camera_init()
 
@@ -27,7 +34,11 @@ init_world :: proc() {
         {25, 25},
         5, 50, 5
     )
+}
 
+deinit_world :: proc() {
+    ecs.terminate(&ECS_WORLD)
+    partioning.deinit_spatial_partitioning(&WORLD_PARTITION)
 }
 
 run_update_systems :: proc() {
@@ -46,11 +57,8 @@ run_update_systems :: proc() {
     systems.s_cull_entities(CameraFrustum)
 
     //Hash + Boids
-    /*
-    TODO: Implement Space Hashing
-    s_hash_entity_positions()
-    s_do_boid_update()
-    */
+    systems.s_build_hash_partion(&WORLD_PARTITION)
+    systems.s_boids_update()
 
     //Apply boid movement to velocity
     systems.s_boids_apply_movement()
@@ -61,11 +69,8 @@ run_update_systems :: proc() {
     systems.s_children_transform_update()
 
     //Rehash phase
-    /*
-    TODO: Implement space hashing again
-    clear_spatial_partition_data()
-    s_hash_entity_positions()
-    */
+    partioning.clear_partition_data(&WORLD_PARTITION)
+    systems.s_build_hash_partion(&WORLD_PARTITION)
 
     //Collision and collision handle phase
     /*
@@ -75,12 +80,15 @@ run_update_systems :: proc() {
 
     s_resolve_collisions()
     */
+
+    partioning.update_buckets(&WORLD_PARTITION)
 }
 
 run_drawing_systems :: proc() {
     rl.BeginMode2D(GameCamera)
 
     systems.s_sprite_renderer_render()
+    partioning.draw_bucket_map(&WORLD_PARTITION)
 
     rl.EndMode2D()
 

@@ -26,6 +26,9 @@ main :: proc() {
     */
     game.start_game_loop()
 
+    //Deinit world
+    game.deinit_game_window()
+
     //Destroy registries
     resource.destroy_registries()
 

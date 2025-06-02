@@ -22,6 +22,13 @@ init_game_window :: proc(
 }
 
 /*
+Deinitializes the Game Window and it's corresponding World, entities and components
+*/
+deinit_game_window :: proc() {
+    world.deinit_world()
+}
+
+/*
 Will start the actual game-loop
 
 CAUTION: WILL ACT AS A BLCOKING WHILE LOOP !!
