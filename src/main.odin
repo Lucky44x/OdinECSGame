@@ -18,7 +18,7 @@ main :: proc() {
     resource.init_registries()
 
     //Start Game
-    game.init_game_window(1280, 720, "Untitled Odin Game")
+    game.init_game_window(1920, 1080, "Untitled Odin Game")
     
     /*
     Start Game Loop ---- BLOCKING

@@ -73,12 +73,14 @@ deinit_spatial_partitioning :: proc(
     delete(self.bucketMap)
 }
 
+@(private="file")
 build_hash_bucket :: proc() -> ^HashBucket {
     newBucket, err := new(HashBucket)
     newBucket.entities = make(#soa[]EntityDescriptor, MAX_ENTITIES_PER_BUCKET)
     return newBucket
 }
 
+@(private="file")
 destroy_hash_bucket :: proc(
     bucket: ^HashBucket
 ) {
@@ -173,6 +175,46 @@ update_buckets :: proc(
         }
     }
 }
+
+/*
+    INTERFACING FUNCTIONS
+*/
+get_boid_vector :: proc(
+    self: ^HashedPartionMap,
+    own_entity: ecs.entity_id
+) -> rl.Vector2 {
+    ownTransform: ^comp.c_Transform = ecs.get_component(&comp.t_Transform, own_entity)
+    ownBoid: ^comp.c_BoidParticle = ecs.get_component(&comp.t_BoidParticle, own_entity)
+
+    //Initialize forces
+    alignment_force, cohesion_force, seperation_force: rl.Vector2
+    center_of_mass: rl.Vector2
+    cohesion_total_weigt: f32
+
+    //check a 3x3 area around our own Bucket, with a cell size of 512 this should be plenty
+    ownBucketPos := get_bucket_pos_from_worldpos(self, ownTransform.position)
+    for x := ownBucketPos[0] - 1; x < ownBucketPos[0] + 1; x += 1 {
+        for y := ownBucketPos[1] - 1;y < ownBucketPos[1] + 1; y += 1 {
+            currentBucketHash := get_bucket_hash_from_cellpos({ x, y })
+            if is_bucket_empty(self, currentBucketHash) do continue
+
+            //Loop over entities inside this bucket
+            currentBucket: ^HashBucket = get_bucket_from_hash(self, currentBucketHash)
+            for i: u32 = 0; i < currentBucket.count; i += 1 {
+                descriptor := currentBucket.entities[i]
+                if descriptor.eid == own_entity || !descriptor.active do continue   //Skip if self or inactive
+                if tagging.EntityTags.BOID not_in descriptor.tags do continue       //Skip if not BOID
+
+                distance := rl.Vector2DistanceSqrt(ownTransform.position, descriptor.pos)
+                if distance >= 
+            }
+        }
+    }
+}
+
+/*
+    GENNERAL FUNCTIONS
+*/
 
 /*
 Gets the Bucket at the specified hash

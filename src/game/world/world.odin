@@ -21,7 +21,7 @@ init_world :: proc() {
     ecs.init(&ECS_WORLD, 5000)
     partioning.init_spatial_hashing(
         &WORLD_PARTITION,
-        128, 128,
+        512, 512,
         120
     )
 
