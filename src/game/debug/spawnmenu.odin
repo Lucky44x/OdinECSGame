@@ -1,6 +1,7 @@
 package debug
 
 import "../world"
+import "../world/entities"
 import rl "vendor:raylib"
 import "core:fmt"
 
@@ -146,5 +147,6 @@ close_spawn_menu :: proc(x, y: f32) {
 spawn_enemy :: proc(x, y: f32) {
     //Just spawn an enemy
     //world.enemy_spawn(rl.Vector2{x,y}, {25, 25}, 5, world.global_player_transform_ref)
+    entities.spawn_enemy(rl.Vector2{x,y}, {25, 25}, world.global_player_transform_ref)
     close_spawn_menu(x,y)
 }

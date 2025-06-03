@@ -14,6 +14,7 @@ init_entities :: proc(
     db = database
 
     init_bullet()
+    init_enemy()
 }
 
 create_entity :: proc(
@@ -24,4 +25,10 @@ create_entity :: proc(
     state ^= default_state
 
     return eid
+}
+
+destroy_entity :: proc(
+    eid: ecs.entity_id
+) {
+    ecs.destroy_entity(db, eid)
 }

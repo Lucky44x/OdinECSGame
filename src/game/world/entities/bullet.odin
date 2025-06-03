@@ -75,6 +75,6 @@ build_bullet :: proc() -> ecs.entity_id {
 }
 
 @(private="file")
-destroy_bullet :: proc(id: ecs.entity_id) {
-
+destroy_bullet :: proc(eid: ecs.entity_id) {
+    destroy_entity(eid)
 }

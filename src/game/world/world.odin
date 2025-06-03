@@ -12,6 +12,8 @@ import "partioning"
 TODO: Implement some way to have different world descriptors
 */
 
+global_player_transform_ref: ^components.c_Transform
+
 ECS_WORLD: ecs.Database
 WORLD_PARTITION: partioning.HashedPartionMap
 
@@ -29,11 +31,13 @@ init_world :: proc() {
     systems.init_systems(&ECS_WORLD)
     entities.init_entities(&ECS_WORLD)
 
-    entities.create_player(
+    playerID, _ := entities.create_player(
         {1280 / 2, 720 / 2},
         {25, 25},
         5, 50, 5
     )
+
+    global_player_transform_ref = ecs.get_component(&components.t_Transform, playerID)
 }
 
 deinit_world :: proc() {
@@ -58,10 +62,6 @@ run_update_systems :: proc() {
 
     //Hash + Boids
     systems.s_build_hash_partion(&WORLD_PARTITION)
-    systems.s_boids_update()
-
-    //Apply boid movement to velocity
-    systems.s_boids_apply_movement()
 
     //Velocity Application and transform phase
     systems.s_apply_velocity()
@@ -88,7 +88,10 @@ run_drawing_systems :: proc() {
     rl.BeginMode2D(GameCamera)
 
     systems.s_sprite_renderer_render()
-    partioning.draw_bucket_map(&WORLD_PARTITION)
+    
+    when ODIN_DEBUG {
+        partioning.draw_bucket_map(&WORLD_PARTITION)
+    }
 
     rl.EndMode2D()
 

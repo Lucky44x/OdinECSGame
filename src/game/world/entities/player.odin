@@ -47,7 +47,7 @@ create_player :: proc(
     movementInput.leftKey = rl.KeyboardKey.A
     movementInput.rightKey = rl.KeyboardKey.D
 
-    playerHashable, _ := ecs.add_component(&comps.t_HashableEntity, playerEntity)
+    //playerHashable, _ := ecs.add_component(&comps.t_HashableEntity, playerEntity)
 
     playerCollider, _ := ecs.add_component(&comps.t_Collider, playerEntity)
     playerCollider.offX = playerTransform.scale[0] / 2

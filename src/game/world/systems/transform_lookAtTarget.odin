@@ -31,7 +31,7 @@ s_transform_lookat_target :: proc(
     for ecs.iterator_next(&it_transform_lookat_target) {
         eid := ecs.get_entity(&it_transform_lookat_target)
 
-        if !check_is_active(eid) do return
+        if !check_is_active(eid) do continue    //This had to be the dumbest error ever
 
         culled := ecs.get_component(&comp.t_Cullable, eid)
         if culled.culled do continue
