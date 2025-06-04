@@ -206,10 +206,11 @@ get_boid_vector :: proc(
                 if tagging.EntityTags.BOID not_in descriptor.tags do continue       //Skip if not BOID
 
                 distance := rl.Vector2DistanceSqrt(ownTransform.position, descriptor.pos)
-                if distance >= 
+                //if distance >= 
             }
         }
     }
+    return { 0, 0 }
 }
 
 /*
