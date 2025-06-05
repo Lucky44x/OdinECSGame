@@ -72,6 +72,7 @@ create_layout :: proc() -> clay.ClayArray(clay.RenderCommand) {
     clay.BeginLayout()
 
     contextmenu.render_context_spawn_menu()
+    contextmenu.render_context_inspect_menu()
 
     return clay.EndLayout()
 }

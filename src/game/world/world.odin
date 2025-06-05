@@ -90,6 +90,7 @@ run_drawing_systems :: proc() {
     systems.s_sprite_renderer_render()
     
     when ODIN_DEBUG {
+        systems.s_draw_object_selection()
         partioning.draw_bucket_map(&WORLD_PARTITION)
     }
 

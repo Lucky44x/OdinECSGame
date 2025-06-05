@@ -1,4 +1,4 @@
-package spawnmenu
+package contextmenu
 
 import "../../../../libs/clay"
 import rl "vendor:raylib"
