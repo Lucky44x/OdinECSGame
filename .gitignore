@@ -1,5 +1,5 @@
-src.exe
-src.pdb\
+./src.exe
+./src.pdb
+build\*
 src.exe
 src.pdb
-build\*

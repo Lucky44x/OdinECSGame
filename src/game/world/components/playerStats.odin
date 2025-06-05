@@ -7,7 +7,9 @@ import rl "vendor:raylib"
     Playerstats Component and Table
 */
 c_PlayerStats :: struct {
-    currentHealth, maxHealth, damage: f32
+    currentHealth : f32,
+    maxHealth : f32, 
+    damage: f32
 }
 
 t_PlayerStats: ecs.Table(c_PlayerStats)

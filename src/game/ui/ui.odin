@@ -6,6 +6,7 @@ import "core:path/filepath"
 import "core:fmt"
 import "core:os"
 import rl "vendor:raylib"
+import "contextmenu"
 
 @(private) FONT_ID_BODY_16 :: 0
 @(private) FONT_ID_BODY_24 :: 8
@@ -49,10 +50,28 @@ load_ui_files :: proc() {
 }
 
 /**
+Initializes the UI Systems
+*/
+init_ui :: proc() {
+    contextmenu.init_context_menus()
+}
+
+/**
+Deinitializes the UI Systems
+*/
+deinit_ui :: proc() {
+    contextmenu.deinit_context_menus()
+}
+
+/**
 Creates the UI Layout for the game
 */
 create_layout :: proc() -> clay.ClayArray(clay.RenderCommand) {
+    contextmenu.update_context_menus()
+    
     clay.BeginLayout()
+
+    contextmenu.render_context_spawn_menu()
 
     return clay.EndLayout()
 }

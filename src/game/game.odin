@@ -2,7 +2,6 @@ package game
 
 import rl "vendor:raylib"
 import "world"
-import "debug"
 import clay "../../libs/clay"
 import clayrl "../clay_render"
 import "core:fmt"
@@ -43,8 +42,7 @@ init_game_window :: proc(
 
     //Load UI Files
     ui.load_ui_files()
-
-    when ODIN_DEBUG do debug.init_spawn_menu()
+    ui.init_ui()
 
     world.init_world()
 }
@@ -58,6 +56,8 @@ Deinitializes the Game Window and it's corresponding World, entities and compone
 */
 deinit_game_window :: proc() {
     world.deinit_world()
+    
+    ui.deinit_ui()
 
     free(clay_memory)
 }
@@ -84,9 +84,6 @@ start_game_loop :: proc() {
                 clay_debug_mode = !clay_debug_mode
                 clay.SetDebugModeEnabled(clay_debug_mode)
             }
-
-            //Spawn menu TODO: Rewrite in CLAY
-            debug.update_spawn_menu()
         }
 
         //Do Logic
@@ -102,9 +99,6 @@ start_game_loop :: proc() {
         clayrl.clay_raylib_render(&clay_rendercommands)
 
         when ODIN_DEBUG {
-            //Spawn Menu TODO: Rewrite in CLAY
-            debug.draw_spawn_menu()
-
             ui.draw_debug_text(&clay_debug_mode)
         }
 
