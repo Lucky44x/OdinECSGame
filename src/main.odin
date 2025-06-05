@@ -4,6 +4,7 @@ import "game"
 import "core:mem"
 import "core:fmt"
 import "resource"
+import rl "vendor:raylib"
 
 tracking_alloc: mem.Tracking_Allocator
 
