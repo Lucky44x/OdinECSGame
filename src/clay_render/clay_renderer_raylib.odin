@@ -1,9 +1,10 @@
-package main
+package clay_render
 
-import clay "../libs/clay-odin"
+import clay "../../libs/clay"
 import "core:math"
 import "core:strings"
 import rl "vendor:raylib"
+import "core:fmt"
 
 Raylib_Font :: struct {
     fontId: u16,
