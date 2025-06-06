@@ -8,8 +8,17 @@ import types "../../../../libs/datatypes"
 import "../tagging"
 import "core:fmt"
 
+import "../../ui/contextmenu"
+
 @(private="file")
 EnemyPool: types.Pool(ecs.entity_id, 1024)
+
+EnemyContextMenu: contextmenu.ContextMenu = {
+    title = "Enemy",
+    items = {
+        //TODO Add kill option
+    }
+}
 
 init_enemy :: proc() {
     types.pool_init(
@@ -38,6 +47,12 @@ spawn_enemy :: proc(
     activecomp ^= true
 }
 
+kill_enemy :: proc(
+    eid: ecs.entity_id
+) {
+    types.pool_push(&EnemyPool, eid)
+}
+
 @(private="file")
 build_enemy :: proc() -> ecs.entity_id {
     fmt.printfln("Building new Enemey")
@@ -56,6 +71,8 @@ build_enemy :: proc() -> ecs.entity_id {
     tags, _ := ecs.add_component(&comps.t_Tags, eid)
     tags ^= { tagging.EntityTags.BOID, tagging.EntityTags.ENEMY, tagging.EntityTags.COLLIDES }
     cullable, _ := ecs.add_component(&comps.t_Cullable, eid)
+
+    debug_inspectable, _ := ecs.add_component(&comps.t_DebugInspectable, eid)
 
     return eid
 }

@@ -53,26 +53,25 @@ load_ui_files :: proc() {
 Initializes the UI Systems
 */
 init_ui :: proc() {
-    contextmenu.init_context_menus()
+    contextmenu.init_context_menu()
 }
 
 /**
 Deinitializes the UI Systems
 */
 deinit_ui :: proc() {
-    contextmenu.deinit_context_menus()
+    contextmenu.deinit_context_menu()
 }
 
 /**
 Creates the UI Layout for the game
 */
 create_layout :: proc() -> clay.ClayArray(clay.RenderCommand) {
-    contextmenu.update_context_menus()
+    contextmenu.update_context_menu()
     
     clay.BeginLayout()
 
-    contextmenu.render_context_spawn_menu()
-    contextmenu.render_context_inspect_menu()
+    contextmenu.context_menu_draw()
 
     return clay.EndLayout()
 }

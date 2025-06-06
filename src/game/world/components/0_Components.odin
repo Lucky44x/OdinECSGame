@@ -28,4 +28,5 @@ init_components :: proc(
     ecs.table_init(&t_TransformChild, db, cap)
     ecs.table_init(&t_TransformLookAt, db, cap)
     ecs.table_init(&t_Velocity, db, cap)
+    ecs.table_init(&t_DebugInspectable, db, cap)
 }
