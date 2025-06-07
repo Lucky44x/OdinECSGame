@@ -3,3 +3,7 @@
 build\*
 src.exe
 src.pdb
+src.exe
+build/debug.exe
+build/debug.pdb
+src.pdb

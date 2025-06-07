@@ -16,7 +16,7 @@ init_systems :: proc(
     init_s_sprite_renderer_render(db)
     init_s_transform_lookat_target(db)
     init_s_build_hash_partition(db)
-    init_s_object_selection(db)
+    init_s_debug_inspectables(db)
 }
 
 @(private)

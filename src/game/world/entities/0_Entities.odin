@@ -8,6 +8,8 @@ import comp "../components"
 @(private="file")
 db: ^ecs.Database
 
+player_transform_ref: ^comp.c_Transform
+
 init_entities :: proc(
     database: ^ecs.Database
 ) {

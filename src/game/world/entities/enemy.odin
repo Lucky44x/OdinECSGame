@@ -8,8 +8,20 @@ import types "../../../../libs/datatypes"
 import "../tagging"
 import "core:fmt"
 
+import contextmenu "../../ui/contextmenu/items"
+
 @(private="file")
 EnemyPool: types.Pool(ecs.entity_id, 1024)
+
+EnemyContextMenu: contextmenu.ContextMenu = {
+    title = "Enemy",
+    items = {
+        {
+            label = "Kill",
+            option = command_kill_enemy
+        }
+    }
+}
 
 init_enemy :: proc() {
     types.pool_init(
@@ -18,6 +30,12 @@ init_enemy :: proc() {
         build_enemy,
         destroy_enemy
     )
+
+    contextmenu.register_world_item({
+        label = "Spawn Enemy",
+        option = command_spawn_enemy
+    })
+
     fmt.printfln("Finished loading")
 }
 
@@ -36,6 +54,14 @@ spawn_enemy :: proc(
 
     activecomp : ^comps.c_State = ecs.get_component(&comps.t_State, eid)
     activecomp ^= true
+}
+
+kill_enemy :: proc(
+    eid: ecs.entity_id
+) {
+    types.pool_push(&EnemyPool, eid)
+    activecomp : ^comps.c_State = ecs.get_component(&comps.t_State, eid)
+    activecomp ^= false
 }
 
 @(private="file")
@@ -57,6 +83,11 @@ build_enemy :: proc() -> ecs.entity_id {
     tags ^= { tagging.EntityTags.BOID, tagging.EntityTags.ENEMY, tagging.EntityTags.COLLIDES }
     cullable, _ := ecs.add_component(&comps.t_Cullable, eid)
 
+    debug_inspectable, _ := ecs.add_component(&comps.t_DebugInspectable, eid)
+    debug_inspectable.collisionSize = { 30, 30 }
+    debug_inspectable.collisionOffset = { -1, -1 }
+    debug_inspectable.menu = &EnemyContextMenu
+
     return eid
 }
 
@@ -66,4 +97,25 @@ destroy_enemy :: proc(
 ) {
     fmt.printfln("Destroying enemy")
     destroy_entity(eid)
+}
+
+/**
+    COMMANDS
+*/
+
+@(private="file")
+command_kill_enemy :: proc(
+    db: ^ecs.Database,
+    eid: ecs.entity_id
+) {
+    kill_enemy(eid)
+    EnemyContextMenu.shouldClose = true
+}
+
+@(private="file")
+command_spawn_enemy :: proc(
+    pos: rl.Vector2
+) {
+    spawn_enemy(pos, { 15, 15 }, player_transform_ref)
+    contextmenu.close_current_context_menu()
 }
