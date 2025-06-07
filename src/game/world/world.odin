@@ -38,6 +38,7 @@ init_world :: proc() {
     )
 
     global_player_transform_ref = ecs.get_component(&components.t_Transform, playerID)
+    entities.player_transform_ref = global_player_transform_ref
 }
 
 deinit_world :: proc() {

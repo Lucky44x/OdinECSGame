@@ -1,11 +1,11 @@
 package components
 
 import ecs "../../../../libs/ode_ecs"
-import contextmenu "../../ui/contextmenu"
+import uiitems"../../ui/contextmenu/items"
 import rl "vendor:raylib"
 
 c_DebugInspectable :: struct {
-    contextMenu: ^contextmenu.ContextMenu,
+    menu: ^uiitems.ContextMenu,
     collisionSize, collisionOffset: rl.Vector2
 }
 
