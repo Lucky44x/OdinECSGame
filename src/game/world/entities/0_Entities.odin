@@ -19,6 +19,10 @@ init_entities :: proc(
     init_enemy()
 }
 
+deinit_entities :: proc() {
+    deinit_enemy()
+}
+
 create_entity :: proc(
     default_state: bool = false
 ) -> ecs.entity_id {

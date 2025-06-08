@@ -40,7 +40,6 @@ s_gun_input :: proc(
 
         dir := (rl.GetMousePosition() + camOffset) - transform.position
 
-        /**
         spawnBullet(
             stats.bulletSpeed,
             stats.gunDamage,
@@ -49,7 +48,6 @@ s_gun_input :: proc(
             {5, 5},
             dir
         )
-            */
     }
 
     ecs.iterator_reset(&it_gun_input)

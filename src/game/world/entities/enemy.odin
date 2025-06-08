@@ -13,16 +13,6 @@ import contextmenu "../../ui/contextmenu/items"
 @(private="file")
 EnemyPool: types.Pool(ecs.entity_id, 1024)
 
-EnemyContextMenu: contextmenu.ContextMenu = {
-    title = "Enemy",
-    items = {
-        {
-            label = "Kill",
-            option = command_kill_enemy
-        }
-    }
-}
-
 init_enemy :: proc() {
     types.pool_init(
         &EnemyPool, 
@@ -37,6 +27,10 @@ init_enemy :: proc() {
     })
 
     fmt.printfln("Finished loading")
+}
+
+deinit_enemy :: proc() {
+    types.pool_destroy(&EnemyPool)
 }
 
 spawn_enemy :: proc(
@@ -83,10 +77,23 @@ build_enemy :: proc() -> ecs.entity_id {
     tags ^= { tagging.EntityTags.BOID, tagging.EntityTags.ENEMY, tagging.EntityTags.COLLIDES }
     cullable, _ := ecs.add_component(&comps.t_Cullable, eid)
 
-    debug_inspectable, _ := ecs.add_component(&comps.t_DebugInspectable, eid)
-    debug_inspectable.collisionSize = { 30, 30 }
-    debug_inspectable.collisionOffset = { -1, -1 }
-    debug_inspectable.menu = &EnemyContextMenu
+    when ODIN_DEBUG {
+        debug_inspectable, _ := ecs.add_component(&comps.t_DebugInspectable, eid)
+        debug_inspectable.collisionSize = { 30, 30 }
+        debug_inspectable.collisionOffset = { -1, -1 }
+        debug_inspectable.menu = {
+            title = "Enemy",
+            items = make([]contextmenu.ContextMenuItem, 2)
+        }
+        debug_inspectable.menu.items[0] = {
+            label = "Kill",
+            option = command_kill_enemy
+        }
+        debug_inspectable.menu.items[1] = {
+            label = "Close",
+            option = proc(){ contextmenu.close_current_context_menu() }
+        }
+    }
 
     return eid
 }
@@ -95,7 +102,11 @@ build_enemy :: proc() -> ecs.entity_id {
 destroy_enemy :: proc(
     eid: ecs.entity_id
 ) {
-    fmt.printfln("Destroying enemy")
+    when ODIN_DEBUG {
+        inspectable: ^comps.c_DebugInspectable = ecs.get_component(&comps.t_DebugInspectable, eid)
+        delete(inspectable.menu.items)
+    }
+
     destroy_entity(eid)
 }
 
@@ -109,7 +120,7 @@ command_kill_enemy :: proc(
     eid: ecs.entity_id
 ) {
     kill_enemy(eid)
-    EnemyContextMenu.shouldClose = true
+    contextmenu.close_current_context_menu()
 }
 
 @(private="file")

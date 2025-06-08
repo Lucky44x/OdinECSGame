@@ -77,7 +77,8 @@ update_context_menu :: proc() {
         else {
             //Entity was clicked
             inspectable: ^comps.c_DebugInspectable = ecs.get_component(&comps.t_DebugInspectable, eid)
-            current_menu = inspectable.menu
+            current_menu = &inspectable.menu
+            fmt.printfln("%s", current_menu^)
         }
 
         assert(current_menu != nil, "Error: Contextmenu was nil, illegal state")
@@ -166,6 +167,14 @@ render_context_menu_item :: proc(
         case items.ContextMenu:
             break
     }
+}
+
+//TODO: Implement all the other field types
+
+render_context_menu_float_field :: proc(
+    item: ^items.ContextMenuFloatField
+) {
+
 }
 
 render_context_menu_button :: proc(

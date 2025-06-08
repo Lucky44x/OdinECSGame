@@ -4,6 +4,9 @@ import rl "vendor:raylib"
 import ecs "../../../../libs/ode_ecs"
 import comps "../components"
 import "../../../resource"
+import contextmenu "../../ui/contextmenu/items"
+
+import "core:fmt"
 
 /*
 Creates the player entity and returns their entity-handle-ids

@@ -5,7 +5,7 @@ import uiitems"../../ui/contextmenu/items"
 import rl "vendor:raylib"
 
 c_DebugInspectable :: struct {
-    menu: ^uiitems.ContextMenu,
+    menu: uiitems.ContextMenu,
     collisionSize, collisionOffset: rl.Vector2
 }
 

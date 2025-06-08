@@ -1,0 +1,22 @@
+{
+    "id": "iron_ore_to_iron",
+    "machine": "smelter_mk1",
+    "inputs": [
+        {
+            "id": "iron_ore",
+            "count": 3
+        }
+    ],
+    "outputs": [
+        {
+            "id": "iron_ingot",
+            "count": 3
+        },
+        {
+            "id": "iron_ingot",
+            "count": 1,
+            "chance": 0.25
+        }
+    ],
+    "processtime": 15
+}

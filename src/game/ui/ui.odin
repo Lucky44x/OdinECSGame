@@ -44,11 +44,11 @@ deinit_ui :: proc() {
 Creates the UI Layout for the game
 */
 create_layout :: proc() -> clay.ClayArray(clay.RenderCommand) {
-    contextmenu.update_context_menu()
+    when ODIN_DEBUG do contextmenu.update_context_menu()
     
     clay.BeginLayout()
 
-    contextmenu.context_menu_draw()
+    when ODIN_DEBUG do contextmenu.context_menu_draw()
 
     return clay.EndLayout()
 }

@@ -42,6 +42,7 @@ init_world :: proc() {
 }
 
 deinit_world :: proc() {
+    entities.deinit_entities()
     ecs.terminate(&ECS_WORLD)
     partioning.deinit_spatial_partitioning(&WORLD_PARTITION)
 }
