@@ -17,6 +17,7 @@ init_entities :: proc(
 
     init_bullet()
     init_enemy()
+    init_conveyor()
 }
 
 deinit_entities :: proc() {

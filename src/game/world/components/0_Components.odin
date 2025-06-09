@@ -2,6 +2,14 @@ package components
 
 import ecs "../../../../libs/ode_ecs"
 
+/**
+    GENERAL DATA STRUCTURES
+*/
+
+LogisticItem :: struct {
+    itemid: cstring
+}
+
 /*
 Initializes all components used in the ecs system
 */
@@ -29,4 +37,10 @@ init_components :: proc(
     ecs.table_init(&t_TransformLookAt, db, cap)
     ecs.table_init(&t_Velocity, db, cap)
     ecs.table_init(&t_DebugInspectable, db, cap)
+    ecs.table_init(&t_FactoryConveyor, db, cap)
+    ecs.table_init(&t_SplineRenderer, db, cap)
+    ecs.table_init(&t_ConveyorBuilder, db, cap)
+    ecs.table_init(&t_ConveyorSnapPoint, db, cap)
+    ecs.table_init(&t_LogisticIntake, db, cap)
+    ecs.table_init(&t_LogisticOutput, db, cap)
 }

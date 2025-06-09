@@ -26,7 +26,7 @@ init_enemy :: proc() {
         option = command_spawn_enemy
     })
 
-    fmt.printfln("Finished loading")
+    //fmt.printfln("Finished loading")
 }
 
 deinit_enemy :: proc() {

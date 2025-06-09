@@ -14,7 +14,6 @@ GetFont :: proc(
     return clayrl.raylib_fonts[fontId].font
 }
 
-//TODO: Something isn't loading correctly
 LoadFont :: proc(
     fontId, fontSize: u16,
     path: cstring

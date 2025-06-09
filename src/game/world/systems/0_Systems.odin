@@ -17,6 +17,8 @@ init_systems :: proc(
     init_s_transform_lookat_target(db)
     init_s_build_hash_partition(db)
     init_s_debug_inspectables(db)
+    init_s_spline_renderer_render(db)
+    init_s_factory_build_conv(db)
 }
 
 @(private)

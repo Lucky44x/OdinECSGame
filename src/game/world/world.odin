@@ -59,10 +59,14 @@ run_update_systems :: proc() {
     )
     systems.s_movement_input()
 
+    //Building input
+    systems.s_factory_build_conv()
+
     //Culling phase
     systems.s_cull_entities(CameraFrustum)
 
     //Hash + Boids
+    partioning.clear_partition_data(&WORLD_PARTITION)
     systems.s_build_hash_partion(&WORLD_PARTITION)
 
     //Velocity Application and transform phase
@@ -89,6 +93,7 @@ run_update_systems :: proc() {
 run_drawing_systems :: proc() {
     rl.BeginMode2D(GameCamera)
 
+    systems.s_spline_renderer_render()  //Render Splines first (conveyors are renderer "behind" Sprites (buildings enemies etc.))
     systems.s_sprite_renderer_render()
     
     when ODIN_DEBUG {
@@ -97,6 +102,4 @@ run_drawing_systems :: proc() {
     }
 
     rl.EndMode2D()
-
-    //TODO: Clear spatial partition Data at end of frame
 }

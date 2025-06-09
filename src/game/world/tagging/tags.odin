@@ -6,7 +6,8 @@ EntityTags :: enum{
     BULLET,
     ENEMY,
     BOID,
-    COLLIDES
+    COLLIDES,
+    SNAPPOINT
 }
 
 TagContainer :: distinct bit_set[EntityTags]

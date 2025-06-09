@@ -1,11 +1,18 @@
 package entities
 
-package entities
-
 import rl "vendor:raylib"
 import ecs "../../../../libs/ode_ecs"
 import comps "../components"
 import "../../../resource"
+
+import contextmenu "../../ui/contextmenu/items"
+
+init_conveyor :: proc() {
+    contextmenu.register_world_item({ 
+        label = "Build Conveyor", 
+        option = command_build_conveyor
+    })
+}
 
 /*
 Creates a conveyor entity and starts the placement logic
@@ -15,21 +22,33 @@ create_conveyor :: proc(
 ) -> ecs.entity_id {
     convEntitiy := create_entity(true)
 
+    convCullable, _ := ecs.add_component(&comps.t_Cullable, convEntitiy)
+
     convTransform, _ := ecs.add_component(&comps.t_Transform, convEntitiy)
     convTransform.position = startPos
 
-    gunSpriteRenderer, _ := ecs.add_component(&comps.t_SpriteRenderer, gunEntity)
-    gunSpriteRenderer.sprite = resource.PrimitvieRect{}
-    gunSpriteRenderer.color = rl.BLACK
+    convRenderer, _ := ecs.add_component(&comps.t_SplineRenderer, convEntitiy)
+    convRenderer.startPoint = rl.Vector2{ 0, 0 }
+    convRenderer.endPoint = rl.Vector2{ 0, 0 }
+    convRenderer.controlPointStart = rl.Vector2{ 0, 0 }
+    convRenderer.controlPointEnd = rl.Vector2{ 0, 0 }
 
-    ecs.add_component(&comps.t_Cullable, gunEntity)
+    convRenderer.startDir = 0
+    convRenderer.endDir = 0
 
-    gunStats, _ := ecs.add_component(&comps.t_GunStats, gunEntity)
-    gunStats.gunDamage = gunDamage
-    gunStats.bulletSpeed = 25
+    convRenderer.thickness = 75
+    convRenderer.color = rl.BLACK
 
-    gunInput, _ := ecs.add_component(&comps.t_GunInput, gunEntity)
-    gunInput.shootKey = rl.MouseButton.LEFT
+    convFactoryConv, _ := ecs.add_component(&comps.t_FactoryConveyor, convEntitiy)
+    convBuilder, _ := ecs.add_component(&comps.t_ConveyorBuilder, convEntitiy)
 
-    return gunEntity
+    return convEntitiy
+}
+
+@(private="file")
+command_build_conveyor :: proc(
+    mousePos: rl.Vector2
+) {
+    create_conveyor(mousePos)
+    contextmenu.close_current_context_menu()
 }
