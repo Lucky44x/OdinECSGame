@@ -7,6 +7,7 @@ import "../../../world/systems"
 import comps "../../../world/components"
 import "../items"
 import "../../fonts"
+import "../../../../input"
 
 import "core:fmt"
 
@@ -65,8 +66,10 @@ deinit_context_menu :: proc() {
     items.handle_cleanup()
 }
 
-update_context_menu :: proc() {
-    if rl.IsMouseButtonPressed(.RIGHT) {
+update_context_menu :: proc(
+    inputMap: input.ResolvedInputMap
+) {
+    if inputMap.actions[input.Actions.DebugContextMenu] == .Pressed {
         if current_menu != nil do close_context_menu()
 
         db, eid := systems.s_debug_get_selected_inspectable(rl.GetMousePosition())

@@ -6,6 +6,7 @@ import clay "../../libs/clay"
 import clayrl "../clay_render"
 import "core:fmt"
 import "ui"
+import "../input"
 
 @(private="file")
 clay_minMemorySize: uint
@@ -44,6 +45,9 @@ init_game_window :: proc(
     ui.load_ui_files()
     ui.init_ui()
 
+    //Init Input Maps
+    init_input_mappings()
+
     world.init_world()
 }
 
@@ -72,11 +76,14 @@ start_game_loop :: proc() {
         //No real change here but looks cool
         defer free_all(context.temp_allocator)
 
+        //Resolve our Inputs
+        resolvedMap := input.resolve_input_map(&InputMap_World)
+
         //Get Clay ready for drawing
         clay.SetPointerState(transmute(clay.Vector2)rl.GetMousePosition(), rl.IsMouseButtonDown(.LEFT))
         clay.UpdateScrollContainers(false, transmute(clay.Vector2)rl.GetMouseWheelMoveV(), rl.GetFrameTime())
         clay.SetLayoutDimensions({ cast(f32)rl.GetRenderWidth(), cast(f32)rl.GetRenderHeight() })
-        clay_rendercommands: clay.ClayArray(clay.RenderCommand) = ui.create_layout()
+        clay_rendercommands: clay.ClayArray(clay.RenderCommand) = ui.create_layout(resolvedMap)
 
         //Do Update specific Debug logic
         when ODIN_DEBUG {
@@ -87,7 +94,7 @@ start_game_loop :: proc() {
         }
 
         //Do Logic
-        world.run_update_systems()
+        world.run_update_systems(&resolvedMap)
 
         //Do Drawing
         rl.BeginDrawing()

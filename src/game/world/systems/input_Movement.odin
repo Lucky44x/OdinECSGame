@@ -4,6 +4,7 @@ import ecs "../../../../libs/ode_ecs"
 import rl "vendor:raylib"
 import comp "../components"
 import "core:math/linalg"
+import "../../../input"
 
 @(private="file")
 MOVEMENT_SCALAR :: 2
@@ -17,36 +18,28 @@ it_movement_input: ecs.Iterator
 init_s_movement_input :: proc(
     db: ^ecs.Database
 ) {
-    ecs.view_init(&v_movement_input, db, { &comp.t_Velocity, &comp.t_MovementInput, &comp.t_MovementStats })
+    ecs.view_init(&v_movement_input, db, { &comp.t_Velocity, &comp.t_MovementStats, &comp.t_MovementInput })
     ecs.iterator_init(&it_movement_input, &v_movement_input)
 }
 
 /*
 Handles movement Input and lerps the players velocity vector towards the desired movement vector
 */
-s_movement_input :: proc() {
+s_movement_input :: proc(
+    inputMap: ^input.ResolvedInputMap
+) {
     for ecs.iterator_next(&it_movement_input) {
         eid := ecs.get_entity(&it_movement_input)
 
         if !check_is_active(eid) do continue
 
         velocity: ^comp.c_Velocity = ecs.get_component(&comp.t_Velocity, eid)
-        input: ^comp.c_MovementInput = ecs.get_component(&comp.t_MovementInput, eid)
         stats: ^comp.c_MovementStats = ecs.get_component(&comp.t_MovementStats, eid)
         input_vec: rl.Vector2 = { 0,0 }
 
 
-        if rl.IsKeyDown(input.forwardKey) {
-            input_vec[1] = -1
-        } else if rl.IsKeyDown(input.backwardKey) {
-            input_vec[1] = 1
-        }
-
-        if rl.IsKeyDown(input.rightKey) {
-            input_vec[0] = 1
-        } else if rl.IsKeyDown(input.leftKey) {
-            input_vec[0] = -1
-        }
+        input_vec[1] = inputMap.axes[input.Axes.MovementVertical]
+        input_vec[0] = inputMap.axes[input.Axes.MovementHorizontal]
 
         input_vec_norm := rl.Vector2Normalize(input_vec)
         movement := input_vec_norm * stats.speed
