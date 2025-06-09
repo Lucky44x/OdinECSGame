@@ -3,6 +3,8 @@ package world
 import ecs "../../../libs/ode_ecs"
 import rl "vendor:raylib"
 
+import "../../input"
+
 import "components"
 import "systems"
 import "entities"
@@ -47,17 +49,21 @@ deinit_world :: proc() {
     partioning.deinit_spatial_partitioning(&WORLD_PARTITION)
 }
 
-run_update_systems :: proc() {
+run_update_systems :: proc(
+    inputMap: ^input.ResolvedInputMap
+) {
     //Update Camera
     camera_update()
 
     //Input phase
     systems.s_gun_input(
+        inputMap,
         GameCamera.target,
         camera_shake_values,
         entities.spawn_bullet
     )
-    systems.s_movement_input()
+
+    systems.s_movement_input(inputMap)
 
     //Building input
     systems.s_factory_build_conv()

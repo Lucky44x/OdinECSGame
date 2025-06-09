@@ -2,13 +2,13 @@ package input
 
 import rl "vendor:raylib"
 
-InputActions :: enum {
+Actions :: enum {
     Shoot = 0,
     ConfirmPlacement,
-    DebugMenu
+    DebugContextMenu
 }
 
-InputAxes :: enum {
+Axes :: enum {
     MovementVertical = 0,
     MovementHorizontal
 }

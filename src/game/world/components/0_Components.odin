@@ -23,7 +23,6 @@ init_components :: proc(
     ecs.table_init(&t_CollisionChecker, db, cap)
     ecs.table_init(&t_Cullable, db, cap)
     ecs.table_init(&t_EnemyStats, db, cap)
-    ecs.table_init(&t_GunInput, db, cap)
     ecs.table_init(&t_GunStats, db, cap)
     ecs.table_init(&t_HashableEntity, db, cap)
     ecs.table_init(&t_MovementInput, db, cap)

@@ -8,6 +8,7 @@ import "core:os"
 import rl "vendor:raylib"
 import contextmenu "contextmenu/renderer"
 import "fonts"
+import "../../input"
 
 @(private="file")
 render_ui_layout :: proc() {
@@ -43,8 +44,11 @@ deinit_ui :: proc() {
 /**
 Creates the UI Layout for the game
 */
-create_layout :: proc() -> clay.ClayArray(clay.RenderCommand) {
-    when ODIN_DEBUG do contextmenu.update_context_menu()
+create_layout :: proc(
+    inputMap: input.ResolvedInputMap
+) -> clay.ClayArray(clay.RenderCommand) {
+    
+    when ODIN_DEBUG do contextmenu.update_context_menu(inputMap)
     
     clay.BeginLayout()
 

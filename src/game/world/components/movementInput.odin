@@ -4,10 +4,8 @@ import ecs "../../../../libs/ode_ecs"
 import rl "vendor:raylib"
 
 /*
-    MovementStats component and Table
+    Tags a component as movable
 */
-c_MovementInput :: struct {
-    forwardKey, backwardKey, leftKey, rightKey: rl.KeyboardKey
-}
+c_MovementInput :: struct {}
 
 t_MovementInput: ecs.Table(c_MovementInput)

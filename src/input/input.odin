@@ -15,7 +15,6 @@ AxisMapping :: union {
 }
 
 VirtualAxis :: struct {
-    value: f32,
     positive, negative: ActionMapping
 }
 
@@ -29,13 +28,13 @@ ResolvedAction :: enum {
 ResolvedAxis :: f32
 
 InputMap :: struct {
-    actions: [InputActions]ActionMapping,
-    axes: [InputAxes]AxisMapping
+    actions: [Actions]ActionMapping,
+    axes: [Axes]AxisMapping
 }
 
 ResolvedInputMap :: struct {
-    actions: [InputActions]ResolvedAction,
-    axes: [InputAxes]ResolvedAxis
+    actions: [Actions]ResolvedAction,
+    axes: [Axes]ResolvedAxis
 }
 
 resolve_input_map :: proc(

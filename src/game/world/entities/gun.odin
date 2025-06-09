@@ -33,8 +33,5 @@ create_gun :: proc(
     gunStats.gunDamage = gunDamage
     gunStats.bulletSpeed = 25
 
-    gunInput, _ := ecs.add_component(&comps.t_GunInput, gunEntity)
-    gunInput.shootKey = rl.MouseButton.LEFT
-
     return gunEntity
 }

@@ -45,10 +45,6 @@ create_player :: proc(
     movementStats.acceleration = 2
 
     movementInput, _ := ecs.add_component(&comps.t_MovementInput, playerEntity)
-    movementInput.forwardKey = rl.KeyboardKey.W
-    movementInput.backwardKey = rl.KeyboardKey.S
-    movementInput.leftKey = rl.KeyboardKey.A
-    movementInput.rightKey = rl.KeyboardKey.D
 
     //playerHashable, _ := ecs.add_component(&comps.t_HashableEntity, playerEntity)
 
