@@ -7,3 +7,4 @@ src.exe
 build/debug.exe
 build/debug.pdb
 src.pdb
+trace.spall

@@ -4,6 +4,7 @@ import ecs "../../../../libs/ode_ecs"
 import rl "vendor:raylib"
 import comp "../components"
 import "core:fmt"
+import "../../profiling"
 
 @(private="file")
 v_boids_update: ecs.View
@@ -18,7 +19,9 @@ init_s_boids_update :: proc(
     ecs.iterator_init(&it_boids_update, &v_boids_update)
 }
 
-s_boids_update :: proc() {
+s_boids_update :: proc(_: rawptr) {
+    profiling.profile_scope("BoidsUpdate System")
+
     for ecs.iterator_next(&it_boids_update) {
         eid := ecs.get_entity(&it_boids_update)
 

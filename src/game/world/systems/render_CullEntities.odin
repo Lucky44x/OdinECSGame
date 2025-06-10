@@ -3,6 +3,7 @@ package systems
 import ecs "../../../../libs/ode_ecs"
 import rl "vendor:raylib"
 import comp "../components"
+import "../../profiling"
 
 @(private="file")
 v_cull_entities: ecs.View
@@ -23,6 +24,8 @@ Sets the respective entities to be culled, when outside the provided view-frustu
 s_cull_entities :: proc(
     frustum: rl.Rectangle
 ) {
+    profiling.profile_scope("EntityCulling System")
+
     for ecs.iterator_next(&it_cull_entities) {
         eid := ecs.get_entity(&it_cull_entities)
 

@@ -6,6 +6,7 @@ import comp "../components"
 import "../../../resource"
 import "core:fmt"
 import "core:math/linalg"
+import "../../profiling"
 
 @(private="file")
 v_factory_build_conv: ecs.View
@@ -20,14 +21,12 @@ init_s_factory_build_conv :: proc(
     ecs.iterator_init(&it_factory_build_conv, &v_factory_build_conv)
 }
 
-//TODO: SWITCH TO QUADRATIC HERMITE CURVE FOR MORE CONTROL OVER DIRECTIONAL BASED START AND ENDPOINTS
-
-//TODO: SIWTCH FROM SINGULAR CURVE RENDERER TO TWO CURVES RENDERED ON EACH SIDE OF THE BELT - Sractch that, just bump up the thickness
-
 /*
 Updates the conveyor builders to build a conveyor
 */
-s_factory_build_conv :: proc() {
+s_factory_build_conv :: proc(_: rawptr) {
+    profiling.profile_scope("ConvBuild System")
+
     for ecs.iterator_next(&it_factory_build_conv) {
         eid := ecs.get_entity(&it_factory_build_conv)
 

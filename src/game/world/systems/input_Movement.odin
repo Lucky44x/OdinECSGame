@@ -5,6 +5,7 @@ import rl "vendor:raylib"
 import comp "../components"
 import "core:math/linalg"
 import "../../../input"
+import "../../profiling"
 
 @(private="file")
 MOVEMENT_SCALAR :: 2
@@ -28,6 +29,8 @@ Handles movement Input and lerps the players velocity vector towards the desired
 s_movement_input :: proc(
     inputMap: ^input.ResolvedInputMap
 ) {
+    profiling.profile_scope("MovementInput System")
+
     for ecs.iterator_next(&it_movement_input) {
         eid := ecs.get_entity(&it_movement_input)
 

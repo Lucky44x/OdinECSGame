@@ -3,6 +3,7 @@ package systems
 import ecs "../../../../libs/ode_ecs"
 import rl "vendor:raylib"
 import comp "../components"
+import "../../profiling"
 
 import "core:math/linalg"
 
@@ -25,6 +26,8 @@ Rotates a Transform to look at a specific target
 s_transform_lookat_target :: proc(
     camOffset: rl.Vector2
 ) {
+    profiling.profile_scope("LookAt System")
+
     targetPos: rl.Vector2 = rl.GetMousePosition()
     forward: rl.Vector2 = { 0, 1 }
 

@@ -5,6 +5,7 @@ import rl "vendor:raylib"
 import comp "../components"
 import "../../../resource"
 import "core:fmt"
+import "../../profiling"
 
 @(private="file")
 v_debug_inspectable: ecs.View
@@ -25,6 +26,8 @@ Gets the entity currently underneath the specified position
 s_debug_get_selected_inspectable :: proc(
     position: rl.Vector2
 ) -> (db: ^ecs.Database, eid: ecs.entity_id) {
+    profiling.profile_scope("DebugInspector System")
+
     for ecs.iterator_next(&it_debug_inspectable) {
         eid := ecs.get_entity(&it_debug_inspectable)
 

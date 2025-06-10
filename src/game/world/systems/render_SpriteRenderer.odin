@@ -4,6 +4,7 @@ import ecs "../../../../libs/ode_ecs"
 import rl "vendor:raylib"
 import comp "../components"
 import "../../../resource"
+import "../../profiling"
 
 @(private="file")
 v_sprite_renderer_render: ecs.View
@@ -22,6 +23,8 @@ init_s_sprite_renderer_render :: proc(
 Renders all Sprite-Renderer Components
 */
 s_sprite_renderer_render :: proc() {
+    profiling.profile_scope("SpriteRenderer System")
+
     for ecs.iterator_next(&it_sprite_renderer_render) {
         eid := ecs.get_entity(&it_sprite_renderer_render)
 

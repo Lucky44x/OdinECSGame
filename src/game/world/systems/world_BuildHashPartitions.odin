@@ -4,6 +4,7 @@ import ecs "../../../../libs/ode_ecs"
 import rl "vendor:raylib"
 import comp "../components"
 import "../partioning"
+import "../../profiling"
 
 @(private="file")
 v_build_hash_partition: ecs.View
@@ -21,6 +22,8 @@ init_s_build_hash_partition :: proc(
 s_build_hash_partion :: proc(
     self: ^partioning.HashedPartionMap
 ) {
+    profiling.profile_scope("BuildHashpartition System")
+
     for ecs.iterator_next(&it_build_hash_partition) {
         eid := ecs.get_entity(&it_build_hash_partition)
 

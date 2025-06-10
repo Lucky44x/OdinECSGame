@@ -4,6 +4,7 @@ import ecs "../../../../libs/ode_ecs"
 import rl "vendor:raylib"
 import comp "../components"
 import "../../../input"
+import "../../profiling"
 
 @(private="file")
 v_gun_input: ecs.View
@@ -27,6 +28,8 @@ s_gun_input :: proc(
     camShake: proc(f32, f32),
     spawnBullet: proc(f32, f32, f32, rl.Vector2, rl.Vector2, rl.Vector2)
 ) {
+    profiling.profile_scope("GunInput System")
+
     for ecs.iterator_next(&it_gun_input) {
         eid := ecs.get_entity(&it_gun_input)
 

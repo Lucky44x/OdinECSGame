@@ -5,6 +5,7 @@ import rl "vendor:raylib"
 import comp "../components"
 import "../../../resource"
 import "core:fmt"
+import "../../profiling"
 
 @(private="file")
 v_spline_renderer_render: ecs.View
@@ -23,6 +24,8 @@ init_s_spline_renderer_render :: proc(
 Renders all Spline Renderer Components
 */
 s_spline_renderer_render :: proc() {
+    profiling.profile_scope("SplineRenderer System")
+
     for ecs.iterator_next(&it_spline_renderer_render) {
         eid := ecs.get_entity(&it_spline_renderer_render)
 

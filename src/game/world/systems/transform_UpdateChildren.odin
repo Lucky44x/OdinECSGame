@@ -3,6 +3,7 @@ package systems
 import ecs "../../../../libs/ode_ecs"
 import rl "vendor:raylib"
 import comp "../components"
+import "../../profiling"
 
 @(private="file")
 v_children_transform_update: ecs.View
@@ -21,6 +22,8 @@ init_s_children_transform_update :: proc(
 Updates child-transforms to follow their parent's position, rotation and scale
 */
 s_children_transform_update :: proc() {
+    profiling.profile_scope("TransformChildren System")
+
     for ecs.iterator_next(&it_children_transform_update) {
         eid := ecs.get_entity(&it_children_transform_update)
        

@@ -95,11 +95,12 @@ CUATION WILL ACT BLOCKING UNTIL GAME-LOOP IS BROKEN
 */
 start_game_loop :: proc() {
     for !rl.WindowShouldClose() {
-        profiling.profile_begin("Game - Update")
+        profiling.profile_begin("GameLoop")
 
         //Resolve our Inputs
-        profiling.profile_begin()
+        profiling.profile_begin("Input Resolving")
         resolvedMap := input.resolve_input_map(&InputMap_World)
+        profiling.profile_end()
 
         profiling.profile_begin("UI - Update")
 

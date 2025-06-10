@@ -3,6 +3,7 @@ package systems
 import ecs "../../../../libs/ode_ecs"
 import rl "vendor:raylib"
 import comp "../components"
+import "../../profiling"
 
 @(private="file")
 v_apply_velocity: ecs.View
@@ -21,6 +22,8 @@ init_s_apply_velocity :: proc(
 Moves every Transform by its Velocity Vector
 */
 s_apply_velocity :: proc() {
+    profiling.profile_scope("ApplyVelocity System")
+
     for ecs.iterator_next(&it_apply_velocity) {
         eid := ecs.get_entity(&it_apply_velocity)
 

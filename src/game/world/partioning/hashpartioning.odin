@@ -13,6 +13,8 @@ import "core:math/linalg"
 import "../tagging"
 import comp "../components"
 
+import "../../profiling"
+
 //GENERAL
 
 MAX_ENTITIES_PER_BUCKET :: 1024
@@ -103,6 +105,8 @@ Clears the hashed-partition data
 clear_partition_data :: proc(
     self: ^HashedPartionMap
 ) {
+    profiling.profile_scope("HashPartition ClearData")
+
     for key, &bucket in self.bucketMap {
         bucket.count = 0
         for tag in tagging.EntityTags do bucket.taggedIndecies[tag] = 0
@@ -116,6 +120,8 @@ insert_entity :: proc(
     self: ^HashedPartionMap,
     eid: ecs.entity_id
 ) {
+    profiling.profile_scope("InsertEntity Function")
+
     transform: ^comp.c_Transform = ecs.get_component(&comp.t_Transform, eid)
     hashData: ^comp.c_HashableEntity = ecs.get_component(&comp.t_HashableEntity, eid)
 
@@ -176,6 +182,8 @@ Updates the bucketmap to destroy buckets that are overdue
 update_buckets :: proc(
     self: ^HashedPartionMap
 ) {
+    profiling.profile_scope("HashPartition Bucket Update")
+
     for key, bucket in self.bucketMap {
         if bucket.count == 0 {            
             if bucket.empty_frame_counter >= self.bucketLifetime {
@@ -196,6 +204,8 @@ get_boid_vector :: proc(
     self: ^HashedPartionMap,
     own_entity: ecs.entity_id
 ) -> rl.Vector2 {
+    profiling.profile_scope("HashPartition GetBoidVector")
+
     ownTransform: ^comp.c_Transform = ecs.get_component(&comp.t_Transform, own_entity)
     ownBoid: ^comp.c_BoidParticle = ecs.get_component(&comp.t_BoidParticle, own_entity)
 
@@ -305,6 +315,8 @@ is_bucket_empty :: proc(
 draw_bucket_map :: proc(
     self: ^HashedPartionMap
 ) {
+    profiling.profile_scope("HashPartition DebugRender")
+
     for key, bucket in self.bucketMap {
         cellX := i32(key & 0xFFFFFFFF)
         cellY := i32(key >> 32)

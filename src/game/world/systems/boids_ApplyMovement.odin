@@ -4,6 +4,7 @@ import ecs "../../../../libs/ode_ecs"
 import rl "vendor:raylib"
 import comp "../components"
 import "core:math/linalg"
+import "../../profiling"
 
 @(private="file")
 MOVEMENT_SCALAR_ENEMY :: 2
@@ -22,6 +23,8 @@ init_s_boids_apply_movement :: proc(
 }
 
 s_boids_apply_movement :: proc() {
+    profiling.profile_scope("BoidsApply System")
+
     for ecs.iterator_next(&it_boids_apply_movement) {
         eid := ecs.get_entity(&it_boids_apply_movement)
 
