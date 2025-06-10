@@ -4,3 +4,6 @@
 [submodule "libs/datatypes"]
 	path = libs/datatypes
 	url = https://github.com/Lucky44x/OdinStructures.git
+[submodule "libs/jobs"]
+	path = libs/jobs
+	url = https://github.com/jakubtomsu/jobs.git
