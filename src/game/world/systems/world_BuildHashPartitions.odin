@@ -29,8 +29,10 @@ s_build_hash_partion :: proc(
 
         if !check_is_active(eid) do continue
 
-        culled: ^comp.c_Cullable = ecs.get_component(&comp.t_Cullable, eid)
-        if culled.culled do continue
+        if ecs.has_component(&comp.t_Cullable, eid) {
+            culled: ^comp.c_Cullable = ecs.get_component(&comp.t_Cullable, eid)
+            if culled.culled do continue
+        }
 
         partioning.insert_entity(self, eid)
     }

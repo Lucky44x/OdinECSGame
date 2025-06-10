@@ -94,7 +94,7 @@ run_update_systems :: proc(
     profiling.profile_begin("Factory Building and Boids Jobs")
     boidsAndBuildingGroup: jobs.Group
     jobs.dispatch(.Medium,
-        jobs.make_job_typed(&boidsAndBuildingGroup, inputMap, systems.s_factory_build_conv),
+        jobs.make_job_typed(&boidsAndBuildingGroup, &systems.FactoryBuildArgs{inputMap, &WORLD_PARTITION}, systems.s_factory_build_conv),
         jobs.make_job_noarg(&boidsAndBuildingGroup, systems.s_boids_update)
     )
     jobs.wait(&boidsAndBuildingGroup)
@@ -150,6 +150,7 @@ run_drawing_systems :: proc() {
     when ODIN_DEBUG {
         systems.s_draw_debug_selection_colliders()
         partioning.draw_bucket_map(&WORLD_PARTITION)
+        systems.s_draw_debug_snappoints()
     }
 
     rl.EndMode2D()

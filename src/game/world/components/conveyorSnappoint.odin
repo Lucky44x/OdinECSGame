@@ -9,6 +9,9 @@ import types "../../../../libs/datatypes"
 /*
     Factory Conveyor Component
 */
-c_ConveyorSnapPoint :: struct {}
+c_ConveyorSnapPoint :: struct {
+    direction: f32,
+    radius: f32
+}
 
 t_ConveyorSnapPoint: ecs.Table(c_ConveyorSnapPoint)

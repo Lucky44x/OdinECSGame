@@ -1,6 +1,7 @@
 package tags
 
 EntityTags :: enum{
+    ANY,
     PLAYER,
     STATIC,
     BULLET,

@@ -19,6 +19,7 @@ init_systems :: proc(
     init_s_debug_inspectables(db)
     init_s_spline_renderer_render(db)
     init_s_factory_build_conv(db)
+    init_s_debug_draw_snappoints(db)
 }
 
 @(private)

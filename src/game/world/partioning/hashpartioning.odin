@@ -27,7 +27,7 @@ HashedPartionMap :: struct {
     bucketMap: map[u64]^HashBucket
 }
 
-@(private="file")
+@(private)
 HashBucket :: struct {
     count: u16,
     capacity: u32,
@@ -37,10 +37,11 @@ HashBucket :: struct {
     empty_frame_counter: u8
 }
 
-@(private="file")
+@(private)
 EntityDescriptor :: struct {
     eid: ecs.entity_id,
     pos, vel: rl.Vector2,
+    rotation: f32,
     aabb: rl.Rectangle,
     active: bool,
     tags: tagging.TagContainer
@@ -77,7 +78,7 @@ deinit_spatial_partitioning :: proc(
     delete(self.bucketMap)
 }
 
-@(private="file")
+@(private)
 build_hash_bucket :: proc() -> ^HashBucket {
     newBucket, err := new(HashBucket)
     newBucket.entities = make(#soa[]EntityDescriptor, MAX_ENTITIES_PER_BUCKET)
@@ -86,7 +87,7 @@ build_hash_bucket :: proc() -> ^HashBucket {
     return newBucket
 }
 
-@(private="file")
+@(private)
 destroy_hash_bucket :: proc(
     bucket: ^HashBucket
 ) {
@@ -152,10 +153,20 @@ insert_entity :: proc(
         tags = tagsComp^
     }
 
+    //If of type snappoint, Just reuse the AABB, since we know that a snappoint won't use this and repurpose it to carry information for our point variables
+    if ecs.has_component(&comp.t_ConveyorSnapPoint, eid) {
+        snapPointComp: ^comp.c_ConveyorSnapPoint = ecs.get_component(&comp.t_ConveyorSnapPoint, eid)
+        aabb.x = snapPointComp.direction
+        aabb.y = 0
+        aabb.width = snapPointComp.radius
+        aabb.height = 0
+    }
+
     //Create entity descriptor
     entityDescriptor := EntityDescriptor{
         eid = eid,
         pos = transform.position,
+        rotation = transform.rotation,
         vel = eVel,
         aabb = aabb,
         active = true,
@@ -195,47 +206,6 @@ update_buckets :: proc(
             bucket.empty_frame_counter += 1
         }
     }
-}
-
-/*
-    INTERFACING FUNCTIONS
-*/
-get_boid_vector :: proc(
-    self: ^HashedPartionMap,
-    own_entity: ecs.entity_id
-) -> rl.Vector2 {
-    profiling.profile_scope("HashPartition GetBoidVector")
-
-    ownTransform: ^comp.c_Transform = ecs.get_component(&comp.t_Transform, own_entity)
-    ownBoid: ^comp.c_BoidParticle = ecs.get_component(&comp.t_BoidParticle, own_entity)
-
-    //Initialize forces
-    alignment_force, cohesion_force, seperation_force: rl.Vector2
-    center_of_mass: rl.Vector2
-    cohesion_total_weigt: f32
-
-    //check a 3x3 area around our own Bucket, with a cell size of 512 this should be plenty
-    ownBucketPos := get_bucket_pos_from_worldpos(self, ownTransform.position)
-    for x := ownBucketPos[0] - 1; x < ownBucketPos[0] + 1; x += 1 {
-        for y := ownBucketPos[1] - 1;y < ownBucketPos[1] + 1; y += 1 {
-            currentBucketHash := get_bucket_hash_from_cellpos({ x, y })
-            if is_bucket_empty(self, currentBucketHash) do continue
-
-            //Loop over entities inside this bucket
-            currentBucket: ^HashBucket = get_bucket_from_hash(self, currentBucketHash)
-            
-            for u: u16 = 0; u < currentBucket.taggedIndecies[tagging.EntityTags.BOID]; u += 1 {
-                i := currentBucket.taggedLookup[tagging.EntityTags.BOID][u]
-                
-                descriptor := currentBucket.entities[i]
-                if descriptor.eid == own_entity || !descriptor.active do continue   //Skip if self or inactive
-
-                distance := rl.Vector2DistanceSqrt(ownTransform.position, descriptor.pos)
-                //if distance >= 
-            }
-        }
-    }
-    return { 0, 0 }
 }
 
 /*
@@ -301,10 +271,20 @@ Retruns true if a cell is empty, or doesn't exist
 */
 is_bucket_empty :: proc(
     self: ^HashedPartionMap,
-    id: u64
+    id: u64,
+    tags: tagging.TagContainer = { tagging.EntityTags.ANY }
 ) -> bool {
     if !(id in self.bucketMap) do return true
-    if get_bucket_from_hash(self, id).count == 0 do return true
+    bucket := get_bucket_from_hash(self, id)
+    if bucket.count == 0 do return true
+    
+    if tagging.EntityTags.ANY not_in tags {
+        for tag in tags {
+            //Check if number of registered entities for this tag is greater 0 if so return false, since we found at least one of the tags
+            if bucket.taggedIndecies[tag] != 0 do return false
+        }
+    }
+
     return false
 }
 

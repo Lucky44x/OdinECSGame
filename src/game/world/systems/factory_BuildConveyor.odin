@@ -8,6 +8,8 @@ import "core:fmt"
 import "core:math/linalg"
 import "../../profiling"
 import "../../../input"
+import "../partioning"
+import "../entities"
 
 @(private="file")
 v_factory_build_conv: ecs.View
@@ -22,22 +24,21 @@ init_s_factory_build_conv :: proc(
     ecs.iterator_init(&it_factory_build_conv, &v_factory_build_conv)
 }
 
+FactoryBuildArgs :: struct {
+    inputMap: ^input.ResolvedInputMap,
+    hashedPartition: ^partioning.HashedPartionMap
+}
+
 /*
 Updates the conveyor builders to build a conveyor
 */
-s_factory_build_conv :: proc(inputMap: ^input.ResolvedInputMap) {
+s_factory_build_conv :: proc(args: ^FactoryBuildArgs) {
     profiling.profile_scope("ConvBuild System")
 
-    count := 0
     for ecs.iterator_next(&it_factory_build_conv) {
         eid := ecs.get_entity(&it_factory_build_conv)
 
-        count += 1
-        fmt.printfln("%i", count)
-
         if !check_is_active(eid) do continue
-
-        fmt.printfln("Has comp: %b", ecs.table__has_component(&comp.t_ConveyorBuilder, eid))
 
         transform: ^comp.c_Transform = ecs.get_component(&comp.t_Transform, eid)
         builder: ^comp.c_ConveyorBuilder = ecs.get_component(&comp.t_ConveyorBuilder, eid)
@@ -47,8 +48,14 @@ s_factory_build_conv :: proc(inputMap: ^input.ResolvedInputMap) {
         if spline.endDir >= 360 do spline.endDir = 0
         if spline.endDir < 0 do spline.endDir = 360
 
+        snapPointFound, snapPos, snapDir := partioning.get_snappoint(args.hashedPartition, rl.GetMousePosition())
+
         spline.endPoint = rl.GetMousePosition() - transform.position
-        
+        if snapPointFound { 
+            spline.endPoint = snapPos - transform.position
+            spline.endDir = snapDir
+        }
+
         deltaVector := spline.endPoint - spline.startPoint
         distance := rl.Vector2Length(deltaVector)
         base_handle_length := distance * 0.25
@@ -67,11 +74,19 @@ s_factory_build_conv :: proc(inputMap: ^input.ResolvedInputMap) {
         spline.controlPointStart = spline.startPoint + (startDirVector * handle_length)
         spline.controlPointEnd = spline.endPoint - (endDirVector * handle_length)
 
-        if inputMap.actions[input.Actions.ConfirmPlacement] == .Pressed {
-            fmt.printfln("Placement confirmed")
-
+        if args.inputMap.actions[input.Actions.ConfirmPlacement] == .Pressed {
             ecs.add_component(&comp.t_FactoryConveyor, eid)
-            //ecs.remove_component(&comp.t_ConveyorBuilder, eid)
+            ecs.remove_component(&comp.t_ConveyorBuilder, eid)
+
+            if !snapPointFound {
+                //Check if we connected to a snap-point... if not we have a free-standing connection meaning we will need to create a new snappoint
+                oppositeDirF := spline.endDir + 180
+                if oppositeDirF < 0 do oppositeDirF += 360
+                oppositeDirI := i32(oppositeDirF) % 360
+                entities.create_snappoint(transform, spline.endPoint, f32(oppositeDirI))
+                fmt.printfln("StartPos: %v, EndPos: %v", spline.startPoint, spline.endPoint)
+                fmt.printfln("Creating snappoint at local: %v -- global: %v", spline.endPoint, spline.endPoint + transform.position)
+            }
         }
     }
 

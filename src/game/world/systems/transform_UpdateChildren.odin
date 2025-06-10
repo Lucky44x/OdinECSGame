@@ -32,6 +32,10 @@ s_children_transform_update :: proc() {
         //spriteRend: ^c_SpriteRenderer = ecs.get_component(&t_SpriteRenderer, eid)
         childTransform: ^comp.c_TransformChild = ecs.get_component(&comp.t_TransformChild, eid)
         transform: ^comp.c_Transform = ecs.get_component(&comp.t_Transform, eid)
+        
+        //If parent is nil skip calculations        
+        if childTransform.parent == nil do continue
+        
         //Dereference so we cannot modify the parent
         parentTransform: comp.c_Transform = childTransform.parent^
 

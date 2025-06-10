@@ -26,6 +26,7 @@ create_conveyor :: proc(
 
     convTransform, _ := ecs.add_component(&comps.t_Transform, convEntity)
     convTransform.position = startPos
+    convTransform.scale = { 1, 1 }
 
     convRenderer, _ := ecs.add_component(&comps.t_SplineRenderer, convEntity)
     convRenderer.startPoint = rl.Vector2{ 0, 0 }
@@ -37,9 +38,8 @@ create_conveyor :: proc(
     convRenderer.endDir = 0
 
     convRenderer.thickness = 75
-    convRenderer.color = rl.BLACK
+    convRenderer.color = rl.DARKGRAY
 
-    convFactoryConv, _ := ecs.add_component(&comps.t_FactoryConveyor, convEntity)
     convBuilder, _ := ecs.add_component(&comps.t_ConveyorBuilder, convEntity)
 
     convLogisticIn, _ := ecs.add_component(&comps.t_LogisticIntake, convEntity)
