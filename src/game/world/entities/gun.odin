@@ -31,7 +31,7 @@ create_gun :: proc(
 
     gunStats, _ := ecs.add_component(&comps.t_GunStats, gunEntity)
     gunStats.gunDamage = gunDamage
-    gunStats.bulletSpeed = 25
+    gunStats.bulletSpeed = 500
 
     return gunEntity
 }

@@ -29,7 +29,7 @@ s_apply_velocity :: proc() {
         vel: ^comp.c_Velocity = ecs.get_component(&comp.t_Velocity, eid)
         transform: ^comp.c_Transform = ecs.get_component(&comp.t_Transform, eid)
 
-        transform.position += vel.velocity
+        transform.position += vel.velocity * rl.GetFrameTime()
         vel.velocity *= vel.deceleration_coeff
     }
 

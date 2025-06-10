@@ -1,12 +1,16 @@
 package game
 
+import clay "../../libs/clay"
+import "../../libs/jobs"
+
 import rl "vendor:raylib"
 import "world"
-import clay "../../libs/clay"
 import clayrl "../clay_render"
 import "core:fmt"
 import "ui"
 import "../input"
+import "profiling"
+import "core:time"
 
 @(private="file")
 clay_minMemorySize: uint
@@ -48,6 +52,20 @@ init_game_window :: proc(
     //Init Input Maps
     init_input_mappings()
 
+    //Initialize JOB system
+    jobs.initialize(
+        //num_worker_threads = 4,
+        thread_proc = proc(_: rawptr) {
+            for jobs.is_running() {
+                if !jobs.try_execute_queued_job() {
+                    time.sleep(2 * time.Millisecond)
+                }
+            }
+        })
+
+    profiling._profiler_init()
+    //time.sleep(time.Second)
+
     world.init_world()
 }
 
@@ -63,6 +81,10 @@ deinit_game_window :: proc() {
     
     ui.deinit_ui()
 
+    jobs.shutdown()
+
+    profiling._profiler_shutdown()
+
     free(clay_memory)
 }
 
@@ -73,11 +95,13 @@ CUATION WILL ACT BLOCKING UNTIL GAME-LOOP IS BROKEN
 */
 start_game_loop :: proc() {
     for !rl.WindowShouldClose() {
-        //No real change here but looks cool
-        defer free_all(context.temp_allocator)
+        profiling.profile_begin("Game - Update")
 
         //Resolve our Inputs
+        profiling.profile_begin()
         resolvedMap := input.resolve_input_map(&InputMap_World)
+
+        profiling.profile_begin("UI - Update")
 
         //Get Clay ready for drawing
         clay.SetPointerState(transmute(clay.Vector2)rl.GetMousePosition(), rl.IsMouseButtonDown(.LEFT))
@@ -93,8 +117,12 @@ start_game_loop :: proc() {
             }
         }
 
+        profiling.profile_end()
+
         //Do Logic
         world.run_update_systems(&resolvedMap)
+
+        profiling.profile_begin("Game - Drawing")
 
         //Do Drawing
         rl.BeginDrawing()
@@ -102,8 +130,12 @@ start_game_loop :: proc() {
         
         world.run_drawing_systems()
 
+        profiling.profile_begin("UI - Drawing")
+
         //Render Clay (UI) on top of world elements
         clayrl.clay_raylib_render(&clay_rendercommands)
+        
+        profiling.profile_end()
 
         when ODIN_DEBUG {
             ui.draw_debug_text(&clay_debug_mode)
@@ -111,6 +143,10 @@ start_game_loop :: proc() {
 
         //Do State specific drawing
         rl.EndDrawing()
+        profiling.profile_end()
+        profiling.profile_end()
+
+        free_all(context.temp_allocator)
     }
 }
 

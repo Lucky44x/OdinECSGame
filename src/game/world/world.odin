@@ -1,14 +1,21 @@
 package world
 
 import ecs "../../../libs/ode_ecs"
+import "../../../libs/jobs"
 import rl "vendor:raylib"
 
 import "../../input"
+
+import "core:fmt"
+
+import "../profiling"
 
 import "components"
 import "systems"
 import "entities"
 import "partioning"
+
+import "core:time"
 
 /*
 TODO: Implement some way to have different world descriptors
@@ -19,7 +26,12 @@ global_player_transform_ref: ^components.c_Transform
 ECS_WORLD: ecs.Database
 WORLD_PARTITION: partioning.HashedPartionMap
 
+TICK_TIME: f64 = 0.1
+TICK_DELTA_ACCUMULATOR: f64 = 0
+
 init_world :: proc() {
+    profiling.profile_begin("World Initialization", "init")
+
     ecs.init(&ECS_WORLD, 5000)
     partioning.init_spatial_hashing(
         &WORLD_PARTITION,
@@ -36,11 +48,13 @@ init_world :: proc() {
     playerID, _ := entities.create_player(
         {1280 / 2, 720 / 2},
         {25, 25},
-        5, 50, 5
+        250, 50, 5
     )
 
     global_player_transform_ref = ecs.get_component(&components.t_Transform, playerID)
     entities.player_transform_ref = global_player_transform_ref
+
+    profiling.profile_end()
 }
 
 deinit_world :: proc() {
@@ -52,6 +66,8 @@ deinit_world :: proc() {
 run_update_systems :: proc(
     inputMap: ^input.ResolvedInputMap
 ) {
+    profiling.profile_begin("World - Update")
+
     //Update Camera
     camera_update()
 
@@ -71,32 +87,62 @@ run_update_systems :: proc(
     //Culling phase
     systems.s_cull_entities(CameraFrustum)
 
-    //Hash + Boids
-    partioning.clear_partition_data(&WORLD_PARTITION)
-    systems.s_build_hash_partion(&WORLD_PARTITION)
+    profiling.profile_begin("World - Factory and hash Update Job")
+    factoryAndHashGroup: jobs.Group
+    jobs.dispatch(.Medium, 
+        jobs.make_job_noarg(&factoryAndHashGroup, run_hashing_systems),
+        jobs.make_job_noarg(&factoryAndHashGroup, run_factory_machine_updates),
+        jobs.make_job_noarg(&factoryAndHashGroup, run_factory_conveyor_updates)
+    )
+    jobs.wait(&factoryAndHashGroup)
+    
+    profiling.profile_end()
+
+    //When tick is needed, run another jobgroup, where the below code block is run in one, and logisticsUpdateOutput is run in the otherss
 
     //Velocity Application and transform phase
     systems.s_apply_velocity()
     systems.s_transform_lookat_target(GameCamera.target)
     systems.s_children_transform_update()
 
-    //Rehash phase
-    partioning.clear_partition_data(&WORLD_PARTITION)
-    systems.s_build_hash_partion(&WORLD_PARTITION)
+    //Rehash
+    run_hashing_systems(nil)
 
-    //Collision and collision handle phase
-    /*
-    TODO: Implement Collision Systems
-    s_collider_update()
-    s_collision_checker()
-
-    s_resolve_collisions()
-    */
+    //Do Collision
 
     partioning.update_buckets(&WORLD_PARTITION)
+    profiling.profile_end()
+}
+
+run_hashing_systems :: proc(_: rawptr) {
+    profiling.profile_begin("Hashing algorithm - TID: ", fmt.tprintf("%i", jobs.current_thread_id()))
+    
+    //Hash + Boids
+    partioning.clear_partition_data(&WORLD_PARTITION)
+    systems.s_build_hash_partion(&WORLD_PARTITION)
+    
+    profiling.profile_end()
+}
+
+run_factory_machine_updates :: proc(_: rawptr) {
+    profiling.profile_begin("Machine Update - TID: ", fmt.tprintf("%i", jobs.current_thread_id()))
+
+    time.sleep(2 * time.Millisecond)
+
+    profiling.profile_end()
+}
+
+run_factory_conveyor_updates :: proc(_: rawptr) {
+    profiling.profile_begin("Conveyor Update - TID: ", fmt.tprintf("%i", jobs.current_thread_id()))
+
+    time.sleep(2 * time.Millisecond)
+
+    profiling.profile_end()
 }
 
 run_drawing_systems :: proc() {
+    profiling.profile_begin("World - Drawing")
+
     rl.BeginMode2D(GameCamera)
 
     systems.s_spline_renderer_render()  //Render Splines first (conveyors are renderer "behind" Sprites (buildings enemies etc.))
@@ -108,4 +154,5 @@ run_drawing_systems :: proc() {
     }
 
     rl.EndMode2D()
+    profiling.profile_end()
 }
