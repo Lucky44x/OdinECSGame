@@ -68,7 +68,7 @@ s_sprite_renderer_render :: proc() {
             case resource.PrimitiveEllipse:
                 rl.DrawEllipse(i32(renderPosition[0]), i32(renderPosition[1]), transform.scale[0], transform.scale[1], spriteRend.color)
                 break
-            case resource.PrimitvieRect:
+            case resource.PrimitiveRect:
                 rl.DrawRectanglePro(dstRec, origin_px, transform.rotation, spriteRend.color)
                 break
         }

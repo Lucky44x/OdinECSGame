@@ -24,7 +24,7 @@ create_gun :: proc(
     gunTransformChild.offsetScale = { 0.35, 1.5 }
 
     gunSpriteRenderer, _ := ecs.add_component(&comps.t_SpriteRenderer, gunEntity)
-    gunSpriteRenderer.sprite = resource.PrimitvieRect{}
+    gunSpriteRenderer.sprite = resource.PrimitiveRect{}
     gunSpriteRenderer.color = rl.BLACK
 
     ecs.add_component(&comps.t_Cullable, gunEntity)

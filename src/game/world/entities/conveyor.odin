@@ -20,14 +20,14 @@ Creates a conveyor entity and starts the placement logic
 create_conveyor :: proc(
     startPos: rl.Vector2
 ) -> ecs.entity_id {
-    convEntitiy := create_entity(true)
+    convEntity := create_entity(true)
 
-    convCullable, _ := ecs.add_component(&comps.t_Cullable, convEntitiy)
+    convCullable, _ := ecs.add_component(&comps.t_Cullable, convEntity)
 
-    convTransform, _ := ecs.add_component(&comps.t_Transform, convEntitiy)
+    convTransform, _ := ecs.add_component(&comps.t_Transform, convEntity)
     convTransform.position = startPos
 
-    convRenderer, _ := ecs.add_component(&comps.t_SplineRenderer, convEntitiy)
+    convRenderer, _ := ecs.add_component(&comps.t_SplineRenderer, convEntity)
     convRenderer.startPoint = rl.Vector2{ 0, 0 }
     convRenderer.endPoint = rl.Vector2{ 0, 0 }
     convRenderer.controlPointStart = rl.Vector2{ 0, 0 }
@@ -39,11 +39,14 @@ create_conveyor :: proc(
     convRenderer.thickness = 75
     convRenderer.color = rl.BLACK
 
-    convFactoryConv, _ := ecs.add_component(&comps.t_FactoryConveyor, convEntitiy)
-    convBuilder, _ := ecs.add_component(&comps.t_ConveyorBuilder, convEntitiy)
+    convFactoryConv, _ := ecs.add_component(&comps.t_FactoryConveyor, convEntity)
+    convBuilder, _ := ecs.add_component(&comps.t_ConveyorBuilder, convEntity)
 
-    return convEntitiy
-}
+    convLogisticIn, _ := ecs.add_component(&comps.t_LogisticIntake, convEntity)
+    convLogisticOutput, _ := ecs.add_component(&comps.t_LogisticOutput, convEntity)
+
+    return convEntity
+}   
 
 @(private="file")
 command_build_conveyor :: proc(

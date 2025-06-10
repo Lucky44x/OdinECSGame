@@ -1,0 +1,17 @@
+{
+    "id": "machine_dbg",
+    "name": "Debug-Machine",
+    "renderable": {
+        "src": "primitive:rectangle",
+        "scaling": {
+            "x": 35,
+            "y": 20
+        },
+        "color": {
+            "r": 130,
+            "g": 130,
+            "b": 130,
+            "a": 255
+        }
+    }
+}

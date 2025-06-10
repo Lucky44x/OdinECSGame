@@ -10,13 +10,16 @@ import types "../../libs/datatypes"
 
 @(private)
 TextureRegistry: types.Registry(cstring, rl.Texture2D)
+@(private)
+TexturePathRegistry: types.Registry(string, cstring)
 
 /*
 Will load a Texture2D into the internal TextureRegistry, allowing the game to use it.
 Textures can be used via Reference
 */
 LoadTexture :: proc(
-    path: cstring
+    path: cstring,
+    id: string = ""
 ) -> ^rl.Texture2D {
 
     //Check if we already loaded this file previously
@@ -31,7 +34,20 @@ LoadTexture :: proc(
     //If not, load the Texture and put it into the Registry and return its reference
     tex := rl.LoadTexture(path)
     ref, _ := types.registry_put(&TextureRegistry, path, tex)
+    types.registry_put(&TexturePathRegistry, id, path)
     return ref
+}
+
+GetTextureByID :: proc(
+    id: string
+) -> ^rl.Texture2D {
+    path, err := types.registry_get(&TexturePathRegistry, id)
+    if err != nil do return nil
+
+    val, err1 := types.registry_get(&TextureRegistry, path^)
+    if err1 != nil do return nil
+
+    return val
 }
 
 /*

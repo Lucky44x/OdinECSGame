@@ -12,6 +12,8 @@ import "../input"
 import "profiling"
 import "core:time"
 
+import "../resource"
+
 @(private="file")
 clay_minMemorySize: uint
 @(private="file")
@@ -29,6 +31,9 @@ init_game_window :: proc(
     height: i32,
     title: cstring
 ) {
+    //Load Resources (Items and Machines)
+    resource.LoadItem("./assets/items/item_dbg.json")
+
     //Initialize Clay Renderer
     clay_minMemorySize = cast(uint)clay.MinMemorySize()
     clay_memory = make([^]u8, clay_minMemorySize) //Crazy way to allocate a certain amount of bytes, but hey, if it works it works

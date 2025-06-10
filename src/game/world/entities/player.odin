@@ -30,7 +30,7 @@ create_player :: proc(
     playerLookAt.target = comps.LookatMouse{}
 
     playerSpriteRenderer, _ := ecs.add_component(&comps.t_SpriteRenderer, playerEntity)
-    playerSpriteRenderer.sprite = resource.PrimitvieRect{}
+    playerSpriteRenderer.sprite = resource.PrimitiveRect{}
     playerSpriteRenderer.color = rl.GREEN
 
     ecs.add_component(&comps.t_Cullable, playerEntity)

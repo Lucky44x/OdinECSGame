@@ -1,14 +1,13 @@
 package components
 
 import ecs "../../../../libs/ode_ecs"
+import "../../../resource"
 
 /**
     GENERAL DATA STRUCTURES
 */
 
-LogisticItem :: struct {
-    itemid: cstring
-}
+LogisticItem :: resource.ItemID
 
 /*
 Initializes all components used in the ecs system

@@ -91,11 +91,10 @@ run_update_systems :: proc(
     
     profiling.profile_end()
 
-
     profiling.profile_begin("Factory Building and Boids Jobs")
     boidsAndBuildingGroup: jobs.Group
     jobs.dispatch(.Medium,
-        jobs.make_job_noarg(&boidsAndBuildingGroup, systems.s_factory_build_conv),
+        jobs.make_job_typed(&boidsAndBuildingGroup, inputMap, systems.s_factory_build_conv),
         jobs.make_job_noarg(&boidsAndBuildingGroup, systems.s_boids_update)
     )
     jobs.wait(&boidsAndBuildingGroup)
