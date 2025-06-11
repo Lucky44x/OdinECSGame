@@ -4,8 +4,6 @@ import ecs "../../../../libs/ode_ecs"
 import rl "vendor:raylib"
 import "../../../resource"
 
-//TODO: Implement
-
 /**
 Spline Renderer for Conveyor belts
 */

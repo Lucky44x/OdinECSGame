@@ -4,8 +4,6 @@ import ecs "../../../../libs/ode_ecs"
 import rl "vendor:raylib"
 import types "../../../../libs/datatypes"
 
-//TODO: Immplement
-
 /*
     Logistic Intake Component
 */

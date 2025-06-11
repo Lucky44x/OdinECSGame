@@ -13,5 +13,12 @@
             "b": 130,
             "a": 255
         }
-    }
+    },
+    "inputs":[],
+    "outputs": [
+        [ 0.5, 1 ]
+    ],
+    "recipes": [
+        "dbg_drill_recipe"
+    ]
 }

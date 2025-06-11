@@ -1,0 +1,12 @@
+{
+    "id": "dbg_drill_recipe",
+    "name": "Drill DBG Item",
+    "rate": 10,
+    "inputs": [],
+    "outputs": [
+        {
+            "item": "dbg_item",
+            "count": 1
+        }
+    ]
+}
