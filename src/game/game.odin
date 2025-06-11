@@ -48,7 +48,11 @@ init_game_window :: proc(
     rl.SetConfigFlags({ .VSYNC_HINT, .MSAA_4X_HINT })
     rl.InitWindow(width, height, title)
     rl.SetExitKey(.KEY_NULL)
-    rl.SetTargetFPS(rl.GetMonitorRefreshRate(0))
+
+    rl.SetTargetFPS(60)
+
+    //TODO: Recap to refresh  rate -- Vsync ... For debug purposes always capped to 60
+    //rl.SetTargetFPS(rl.GetMonitorRefreshRate(0))
 
     //Load UI Files
     ui.load_ui_files()
@@ -69,7 +73,6 @@ init_game_window :: proc(
         })
 
     profiling._profiler_init()
-    //time.sleep(time.Second)
 
     world.init_world()
 }

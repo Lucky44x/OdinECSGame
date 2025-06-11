@@ -89,6 +89,10 @@ run_update_systems :: proc(
     )
     jobs.wait(&factoryAndHashGroup)
     
+    //Run the passthrough system and the slot cleanup after
+    systems.s_factory_passthrough_update()
+    systems.s_factory_slot_cleanup()
+
     profiling.profile_end()
 
     profiling.profile_begin("Factory Building and Boids Jobs")

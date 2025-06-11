@@ -12,6 +12,11 @@ import types "../../libs/datatypes"
 
 ItemID :: distinct u32
 
+ItemStack :: struct {
+    id: ItemID,
+    count: i32
+}
+
 ItemDescriptor :: struct {
     name: cstring,
     sprite: Sprite
@@ -47,6 +52,15 @@ GetItemIDByPath :: proc(
     return types.registry_get(&ItemPathRegistry, path)
 }
 
+InsertItem :: proc(
+    id: string,
+    item: ItemDescriptor
+) {
+    newID, idErr := types.registry_put(&ItemPathRegistry, id, NextItemId)
+    newItem, itemErr := types.registry_put(&ItemRegistry, NextItemId, item)
+    NextItemId += 1    
+}
+
 LoadItem :: proc(
     path: string
 ) {
@@ -62,12 +76,10 @@ LoadItem :: proc(
     spriteObj := itemObject["sprite"].(json.Object)
     sprite := parse_sprite(spriteObj)
 
-    newID, idErr := types.registry_put(&ItemPathRegistry, itemId, NextItemId)
-    newItem, itemErr := types.registry_put(&ItemRegistry, NextItemId, ItemDescriptor{
+    InsertItem(itemId, ItemDescriptor{
         name = strings.clone_to_cstring(itemName),
         sprite = sprite
     })
-    NextItemId += 1
 }
 
 UnloadItem :: proc(item: ^ItemDescriptor) {

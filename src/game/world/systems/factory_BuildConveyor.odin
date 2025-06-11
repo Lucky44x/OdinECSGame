@@ -76,14 +76,18 @@ s_factory_build_conv :: proc(args: ^FactoryBuildArgs) {
 
         if args.inputMap.actions[input.Actions.ConfirmPlacement] == .Pressed {
             ecs.add_component(&comp.t_FactoryConveyor, eid)
+            intake, output := comp.add_logistics_comps(eid, 1, 1)
+
             ecs.remove_component(&comp.t_ConveyorBuilder, eid)
 
             if !snapPointFound {
+                //TODO: This only covers the ends of conveyors not their starts. Add starts in too, or ake it so conveyros can only be placed on snappoints
+
                 //Check if we connected to a snap-point... if not we have a free-standing connection meaning we will need to create a new snappoint
                 oppositeDirF := spline.endDir + 180
                 if oppositeDirF < 0 do oppositeDirF += 360
                 oppositeDirI := i32(oppositeDirF) % 360
-                entities.create_snappoint(transform, spline.endPoint, f32(oppositeDirI))
+                entities.create_snappoint(transform, nil, 0, output, 0, spline.endPoint, f32(oppositeDirI))
                 fmt.printfln("StartPos: %v, EndPos: %v", spline.startPoint, spline.endPoint)
                 fmt.printfln("Creating snappoint at local: %v -- global: %v", spline.endPoint, spline.endPoint + transform.position)
             }

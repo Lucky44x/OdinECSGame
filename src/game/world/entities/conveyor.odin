@@ -42,8 +42,10 @@ create_conveyor :: proc(
 
     convBuilder, _ := ecs.add_component(&comps.t_ConveyorBuilder, convEntity)
 
-    convLogisticIn, _ := ecs.add_component(&comps.t_LogisticIntake, convEntity)
-    convLogisticOutput, _ := ecs.add_component(&comps.t_LogisticOutput, convEntity)
+    //Logistics Components will be added dynamically once conveyor is built
+
+    //convLogisticIn, _ := ecs.add_component(&comps.t_LogisticIntake, convEntity)
+    //convLogisticOutput, _ := ecs.add_component(&comps.t_LogisticOutput, convEntity)
 
     return convEntity
 }   

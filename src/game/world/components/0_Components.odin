@@ -8,6 +8,7 @@ import "../../../resource"
 */
 
 LogisticItem :: resource.ItemID
+LogisticStack :: resource.ItemStack
 
 /*
 Initializes all components used in the ecs system
@@ -41,4 +42,14 @@ init_components :: proc(
     ecs.table_init(&t_ConveyorSnapPoint, db, cap)
     ecs.table_init(&t_LogisticIntake, db, cap)
     ecs.table_init(&t_LogisticOutput, db, cap)
+    ecs.table_init(&t_LogisticPassthrough, db, cap)
+}
+
+add_logistics_comps :: proc(
+    self: ecs.entity_id,
+    inputSlots, outputSlots: u8
+) -> (intake: ^c_LogisticIntake, output: ^c_LogisticOutput) {
+    intake = add_intake(self, inputSlots)
+    output = add_output(self, outputSlots)
+    return
 }

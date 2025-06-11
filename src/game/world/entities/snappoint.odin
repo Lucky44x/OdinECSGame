@@ -21,6 +21,10 @@ Creates a conveyor entity and starts the placement logic
 */
 create_snappoint :: proc(
     parent: ^comps.c_Transform,
+    linkedInput: ^comps.c_LogisticIntake,
+    linkedInputslot: u8,
+    linkedOutput: ^comps.c_LogisticOutput,
+    linkedOutputSlot: u8,
     pos: rl.Vector2,
     rot: f32
 ) -> ecs.entity_id {
@@ -45,6 +49,12 @@ create_snappoint :: proc(
 
     snapPointHashable, _ := ecs.add_component(&comps.t_HashableEntity, snapEntity)    
 
+    passthrough, _ := ecs.add_component(&comps.t_LogisticPassthrough, snapEntity)
+    passthrough.linkedInput = linkedInput
+    passthrough.linkedInputSlot = linkedInputslot
+    passthrough.linkedOutput = linkedOutput
+    passthrough.linkedOutputSlot = linkedOutputSlot
+
     return snapEntity
 }   
 
@@ -52,6 +62,6 @@ create_snappoint :: proc(
 command_build_snappoint :: proc(
     mousePos: rl.Vector2
 ) {
-    create_snappoint(nil, mousePos, 0)
+    create_snappoint(nil, nil, 0, nil, 0, mousePos, 0)
     contextmenu.close_current_context_menu()
 }

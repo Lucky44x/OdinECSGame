@@ -20,6 +20,8 @@ init_systems :: proc(
     init_s_spline_renderer_render(db)
     init_s_factory_build_conv(db)
     init_s_debug_draw_snappoints(db)
+    init_s_factory_passthrough_update(db)
+    init_s_factory_slot_cleanup_update(db)
 }
 
 @(private)
