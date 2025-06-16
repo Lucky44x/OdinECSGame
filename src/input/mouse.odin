@@ -1,4 +1,3 @@
-#+private
 package input
 
 import rl "vendor:raylib"

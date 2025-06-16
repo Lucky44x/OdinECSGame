@@ -20,7 +20,7 @@ it_factory_build_conv: ecs.Iterator
 init_s_factory_build_conv :: proc(
     db: ^ecs.Database
 ) {
-    ecs.view_init(&v_factory_build_conv, db, { &comp.t_ConveyorBuilder, &comp.t_SplineRenderer, &comp.t_Transform })
+    ecs.view_init(&v_factory_build_conv, db, { &comp.t_State, &comp.t_ConveyorBuilder, &comp.t_Transform })
     ecs.iterator_init(&it_factory_build_conv, &v_factory_build_conv)
 }
 
@@ -42,19 +42,59 @@ s_factory_build_conv :: proc(args: ^FactoryBuildArgs) {
 
         transform: ^comp.c_Transform = ecs.get_component(&comp.t_Transform, eid)
         builder: ^comp.c_ConveyorBuilder = ecs.get_component(&comp.t_ConveyorBuilder, eid)
+
+        snapPointFound, snapPos, snapDir, snapType, snapEID := partioning.get_snappoint(args.hashedPartition, rl.GetMousePosition())
+        snapConnectible: bool = snapPointFound
+
+        scrollWheelInput := args.inputMap.axes[input.Axes.ScrollVertical] * rl.GetFrameTime() * 250
+
+        if !builder.isActive {
+
+            transform.position = rl.GetMousePosition()
+            transform.rotation -= scrollWheelInput
+            
+            if snapPointFound && snapType == .Output {
+                transform.position = snapPos
+                transform.rotation = 180 - snapDir
+            } else do snapConnectible = false
+            
+            if transform.rotation >= 360 do transform.rotation = 0
+            if transform.rotation < 0 do transform.rotation = 360
+
+            if args.inputMap.actions[input.Actions.ConfirmPlacement] != .Pressed do continue
+
+            builder.isActive = true
+
+            convRenderer, _ := ecs.add_component(&comp.t_SplineRenderer, eid)
+            convRenderer.startPoint = rl.Vector2{ 0, 0 }
+            convRenderer.endPoint = rl.Vector2{ 0, 0 }
+            convRenderer.controlPointStart = rl.Vector2{ 0, 0 }
+            convRenderer.controlPointEnd = rl.Vector2{ 0, 0 }
+
+            convRenderer.startDir = transform.rotation - 180
+            convRenderer.endDir = 0
+
+            convRenderer.thickness = 75
+            convRenderer.color = rl.DARKGRAY
+
+            transform.scale = { 1, 1 }
+            transform.origin = { 0, 0 }
+            continue
+        }
+
         spline: ^comp.c_SplineRenderer = ecs.get_component(&comp.t_SplineRenderer, eid)
 
-        spline.endDir -= rl.GetMouseWheelMoveV()[1] * rl.GetFrameTime() * 250
-        if spline.endDir >= 360 do spline.endDir = 0
-        if spline.endDir < 0 do spline.endDir = 360
-
-        snapPointFound, snapPos, snapDir := partioning.get_snappoint(args.hashedPartition, rl.GetMousePosition())
+        spline.endDir -= scrollWheelInput
 
         spline.endPoint = rl.GetMousePosition() - transform.position
-        if snapPointFound { 
+        
+        if snapPointFound && snapType == .Input { 
             spline.endPoint = snapPos - transform.position
-            spline.endDir = snapDir
-        }
+            spline.endDir = 180 - snapDir
+        } else do snapConnectible = false
+        
+        if spline.endDir >= 360 do spline.endDir = 0
+        if spline.endDir < 0 do spline.endDir = 360
 
         deltaVector := spline.endPoint - spline.startPoint
         distance := rl.Vector2Length(deltaVector)
@@ -79,17 +119,16 @@ s_factory_build_conv :: proc(args: ^FactoryBuildArgs) {
             intake, output := comp.add_logistics_comps(eid, 1, 1)
 
             ecs.remove_component(&comp.t_ConveyorBuilder, eid)
+            //ecs.remove_component(&comp.t_SpriteRenderer, eid)
 
             if !snapPointFound {
                 //TODO: This only covers the ends of conveyors not their starts. Add starts in too, or ake it so conveyros can only be placed on snappoints
 
                 //Check if we connected to a snap-point... if not we have a free-standing connection meaning we will need to create a new snappoint
-                oppositeDirF := spline.endDir + 180
+                oppositeDirF := spline.endDir
                 if oppositeDirF < 0 do oppositeDirF += 360
                 oppositeDirI := i32(oppositeDirF) % 360
-                entities.create_snappoint(transform, nil, 0, output, 0, spline.endPoint, f32(oppositeDirI))
-                fmt.printfln("StartPos: %v, EndPos: %v", spline.startPoint, spline.endPoint)
-                fmt.printfln("Creating snappoint at local: %v -- global: %v", spline.endPoint, spline.endPoint + transform.position)
+                entities.create_snappoint(transform, nil, 0, output, 0, .Output, spline.endPoint, f32(oppositeDirI))
             }
         }
     }

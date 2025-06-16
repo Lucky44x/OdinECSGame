@@ -26,8 +26,14 @@ create_conveyor :: proc(
 
     convTransform, _ := ecs.add_component(&comps.t_Transform, convEntity)
     convTransform.position = startPos
-    convTransform.scale = { 1, 1 }
+    convTransform.scale = { 75, 75 }
+    convTransform.origin = { 0.5, 1 }
 
+    convRenderer, _ := ecs.add_component(&comps.t_SpriteRenderer, convEntity)
+    convRenderer.sprite = resource.PrimitiveRect{}
+    convRenderer.color = rl.Color{ 130, 130, 130, 125 }
+
+    /*
     convRenderer, _ := ecs.add_component(&comps.t_SplineRenderer, convEntity)
     convRenderer.startPoint = rl.Vector2{ 0, 0 }
     convRenderer.endPoint = rl.Vector2{ 0, 0 }
@@ -39,7 +45,7 @@ create_conveyor :: proc(
 
     convRenderer.thickness = 75
     convRenderer.color = rl.DARKGRAY
-
+    */
     convBuilder, _ := ecs.add_component(&comps.t_ConveyorBuilder, convEntity)
 
     //Logistics Components will be added dynamically once conveyor is built

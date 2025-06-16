@@ -3,6 +3,7 @@ package world
 import ecs "../../../libs/ode_ecs"
 import "../../../libs/jobs"
 import rl "vendor:raylib"
+import ctxmenu "../ui/contextmenu/items"
 
 import "../../input"
 
@@ -50,6 +51,7 @@ init_world :: proc() {
     )
 
     global_player_transform_ref = ecs.get_component(&components.t_Transform, playerID)
+    //ctxmenu.mouseOffset = &global_player_transform_ref.position
     entities.player_transform_ref = global_player_transform_ref
 }
 
@@ -63,6 +65,8 @@ run_update_systems :: proc(
     inputMap: ^input.ResolvedInputMap
 ) {
     profiling.profile_scope("World Update")
+
+    //GameCamera.target = global_player_transform_ref.position - rl.Vector2{ f32(rl.GetScreenWidth() / 2), f32(rl.GetScreenHeight() / 2) }
 
     //Update Camera
     camera_update()

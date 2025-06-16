@@ -10,5 +10,6 @@ Actions :: enum {
 
 Axes :: enum {
     MovementVertical = 0,
-    MovementHorizontal
+    MovementHorizontal,
+    ScrollVertical
 }

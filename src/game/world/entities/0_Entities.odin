@@ -19,6 +19,7 @@ init_entities :: proc(
     init_enemy()
     init_conveyor()
     init_snappoint()
+    init_building()
 }
 
 deinit_entities :: proc() {
@@ -39,4 +40,11 @@ destroy_entity :: proc(
     eid: ecs.entity_id
 ) {
     ecs.destroy_entity(db, eid)
+}
+
+vec3ToVec2 :: proc(
+    vec3: rl.Vector3,
+    xInd, yInd: u8
+) -> rl.Vector2 {
+    return rl.Vector2{ vec3[xInd], vec3[yInd] }
 }

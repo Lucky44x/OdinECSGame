@@ -59,6 +59,8 @@ WorldContextMenu : DynamicContextMenu = {
     items  = make([dynamic]ContextMenuItem)
 }
 
+mouseOffset: ^rl.Vector2
+
 register_world_item :: proc(
     item: ContextMenuItem
 ) {

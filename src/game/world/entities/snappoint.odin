@@ -25,6 +25,7 @@ create_snappoint :: proc(
     linkedInputslot: u8,
     linkedOutput: ^comps.c_LogisticOutput,
     linkedOutputSlot: u8,
+    type: comps.SNAPTYPE,
     pos: rl.Vector2,
     rot: f32
 ) -> ecs.entity_id {
@@ -43,6 +44,7 @@ create_snappoint :: proc(
 
     snapPointComp, _ := ecs.add_component(&comps.t_ConveyorSnapPoint, snapEntity)
     snapPointComp.radius = 15
+    snapPointComp.type = type
 
     snapPointTags, _ := ecs.add_component(&comps.t_Tags, snapEntity)
     snapPointTags ^= { tagging.EntityTags.SNAPPOINT }
@@ -62,6 +64,6 @@ create_snappoint :: proc(
 command_build_snappoint :: proc(
     mousePos: rl.Vector2
 ) {
-    create_snappoint(nil, nil, 0, nil, 0, mousePos, 0)
+    create_snappoint(nil, nil, 0, nil, 0, .General, mousePos, 0)
     contextmenu.close_current_context_menu()
 }

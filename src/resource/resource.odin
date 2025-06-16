@@ -43,8 +43,10 @@ init_registries :: proc() {
     types.registry_init(&TextureRegistry, UnloadTexture)
     types.registry_init(&ItemRegistry, UnloadItem)
     types.registry_init(&RecipeRegistry, UnloadRecipe)
+    types.registry_init(&BuildingRegistry, UnloadBuilding)
     types.registry_init(&ItemPathRegistry, proc(^ItemID){})
     types.registry_init(&RecipePathRegistry, proc(^RecipeID){})
+    types.registry_init(&BuildingPathRegistry, proc(^BuildingID){})
     types.registry_init(&TexturePathRegistry, proc(^cstring){})
 
     //Insert the default Item (0)
@@ -64,6 +66,21 @@ init_registries :: proc() {
         outputs = nil,
         prodRatePerMin = 0
     })
+
+    building := InsertBuilding("building_null", BuildingDescriptor{
+        name = strings.clone_to_cstring("NULL"),
+        sprite = Sprite{
+            scaling = { 100, 75 },
+            origin = { 0.5, 0.5 },
+            color = rl.PINK,
+            source = PrimitiveRect{}
+        },
+        inputs = make([]rl.Vector3, 1),
+        outputs = make([]rl.Vector3, 1),
+        recipes = make([]RecipeID, 1)
+    })
+    building.inputs[0] = { 0, -0.5, 180 }
+    building.outputs[0] = { 0, 0.5, 0 }
 }
 
 /*
@@ -74,9 +91,11 @@ destroy_registries :: proc() {
     types.registry_destroy(&TextureRegistry)
     types.registry_destroy(&ItemRegistry)
     types.registry_destroy(&RecipeRegistry)
+    types.registry_destroy(&BuildingRegistry)
     types.registry_destroy(&ItemPathRegistry)
     types.registry_destroy(&RecipePathRegistry)
     types.registry_destroy(&TexturePathRegistry)
+    types.registry_destroy(&BuildingPathRegistry)
 }
 
 /*

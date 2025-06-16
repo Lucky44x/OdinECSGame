@@ -31,8 +31,20 @@ s_draw_debug_snappoints :: proc() {
 
         transform: ^comp.c_Transform = ecs.get_component(&comp.t_Transform, eid)
         snappoint: ^comp.c_ConveyorSnapPoint = ecs.get_component(&comp.t_ConveyorSnapPoint, eid)
-        
-        rl.DrawCircleV(transform.position, snappoint.radius, rl.Color{ 0, 158, 47, 125 })
+        passthrough: ^comp.c_LogisticPassthrough = ecs.get_component(&comp.t_LogisticPassthrough, eid)
+
+        color := rl.Color{ 230, 41, 55, 125 }
+        if passthrough.linkedInput == nil && passthrough.linkedOutput == nil do color = { 190, 33, 55, 255 } //Red -> Invalid State
+        else if passthrough.linkedInput == nil do color = { 200, 122, 255, 125 } //Purple -> Output Node (Missing input)
+        else if passthrough.linkedOutput == nil do color = { 0, 158, 47, 125 } //Green -> Input Node (Missing output)
+        else do color = { 80, 80, 80, 125 } //Gray -> Filled Node
+
+        rl.DrawCircleV(transform.position, snappoint.radius, color)
+        vec2EndPos := transform.position
+        vec2Dir := rl.Vector2Rotate({0, 1}, transform.rotation * rl.DEG2RAD)
+        vec2Dir = rl.Vector2Normalize(vec2Dir)
+        vec2EndPos += vec2Dir * snappoint.radius
+        rl.DrawLineV(transform.position, vec2EndPos, rl.BLACK)
     }
 
     ecs.iterator_reset(&it_debug_snappoints)

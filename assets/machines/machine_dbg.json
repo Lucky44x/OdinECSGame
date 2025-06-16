@@ -1,7 +1,7 @@
 {
     "id": "machine_dbg",
     "name": "Debug-Machine",
-    "renderable": {
+    "sprite": {
         "src": "primitive:rectangle",
         "scaling": {
             "x": 35,
@@ -16,7 +16,7 @@
     },
     "inputs":[],
     "outputs": [
-        [ 0.5, 1 ]
+        [ 0.5, 1, 0 ]
     ],
     "recipes": [
         "dbg_drill_recipe"

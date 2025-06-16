@@ -75,6 +75,7 @@ update_context_menu :: proc(
         db, eid := systems.s_debug_get_selected_inspectable(rl.GetMousePosition())
         menu_pos = rl.GetMousePosition()
         current_callback_params = { db, eid, menu_pos }
+        if items.mouseOffset != nil do current_callback_params.pos -= items.mouseOffset^
 
         if db == nil do current_menu = items.makeWorldContextMenu() //No Entity clicked
         else {

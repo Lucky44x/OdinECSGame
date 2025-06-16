@@ -1,6 +1,7 @@
 {
     "id": "dbg_item",
     "name": "Debug-Item",
+    "stack-size": 32,
     "sprite": {
         "src": "primitive:rectangle",
         "origin": [ 0.5, 0.5 ],

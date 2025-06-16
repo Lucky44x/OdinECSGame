@@ -20,8 +20,9 @@ import "../../profiling"
 */
 get_snappoint :: proc(
     self: ^HashedPartionMap,
-    ownPosition: rl.Vector2
-) -> (found: bool, position: rl.Vector2, direction: f32) {
+    ownPosition: rl.Vector2,
+    searchFor: comp.SNAPTYPE = .General
+) -> (found: bool, position: rl.Vector2, direction: f32, type: comp.SNAPTYPE, eid: ecs.entity_id) {
     profiling.profile_scope("HashPartition GetSnapPoint")
 
     //check a 3x3 area around our own Bucket, with a cell size of 512 this should be plenty
@@ -39,12 +40,14 @@ get_snappoint :: proc(
                 
                 descriptor := currentBucket.entities[i]
 
+                if searchFor != .General && u8(descriptor.aabb.height) != u8(searchFor) do continue
+
                 distance := rl.Vector2DistanceSqrt(ownPosition, descriptor.pos)
                 if distance > (descriptor.aabb.width * descriptor.aabb.width) do continue
 
-                return true, descriptor.pos, descriptor.rotation
+                return true, descriptor.pos, descriptor.rotation, cast(comp.SNAPTYPE)descriptor.aabb.height, eid
             }
         }
     }
-    return false, {}, 0
+    return false, {}, 0, .General, {}
 }

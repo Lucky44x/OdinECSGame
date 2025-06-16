@@ -8,7 +8,8 @@ import types "../../../../libs/datatypes"
     Factory Conveyor Builer "Tag" Component
 */
 c_ConveyorBuilder :: struct { 
-    _: u8
+    isActive: bool,
+    linkedPassthrough: ^c_LogisticPassthrough
 }
 
 t_ConveyorBuilder: ecs.Table(c_ConveyorBuilder)

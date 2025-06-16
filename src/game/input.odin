@@ -20,4 +20,6 @@ init_input_mappings :: proc() {
         rl.KeyboardKey.S,
         rl.KeyboardKey.W
     }
+
+    InputMap_World.axes[input.Axes.ScrollVertical] = input.MouseAxis.ScrollY
 }

@@ -159,7 +159,7 @@ insert_entity :: proc(
         aabb.x = snapPointComp.direction
         aabb.y = 0
         aabb.width = snapPointComp.radius
-        aabb.height = 0
+        aabb.height = f32(u8(snapPointComp.type))
     }
 
     //Create entity descriptor
