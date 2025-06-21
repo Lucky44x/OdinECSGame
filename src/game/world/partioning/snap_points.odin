@@ -45,7 +45,7 @@ get_snappoint :: proc(
                 distance := rl.Vector2DistanceSqrt(ownPosition, descriptor.pos)
                 if distance > (descriptor.aabb.width * descriptor.aabb.width) do continue
 
-                return true, descriptor.pos, descriptor.rotation, cast(comp.SNAPTYPE)descriptor.aabb.height, eid
+                return true, descriptor.pos, descriptor.rotation, cast(comp.SNAPTYPE)descriptor.aabb.height, descriptor.eid
             }
         }
     }

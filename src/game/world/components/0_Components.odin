@@ -44,6 +44,7 @@ init_components :: proc(
     ecs.table_init(&t_LogisticIntake, db, cap)
     ecs.table_init(&t_LogisticOutput, db, cap)
     ecs.table_init(&t_LogisticPassthrough, db, cap)
+    ecs.table_init(&t_RecipeSetter, db, cap)
 }
 
 add_logistics_comps :: proc(

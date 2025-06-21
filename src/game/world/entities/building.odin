@@ -33,9 +33,13 @@ create_building :: proc(
     buildSpriteRenderer, _ := ecs.add_component(&comps.t_SpriteRenderer, buildEntity)
 
     buildComp, _ := ecs.add_component(&comps.t_FactoryMachine, buildEntity)
-    buildComp.descriptor = descriptor
-    buildComp.recipe = resource.GetRecipeByID(descriptor.recipes[0])
-    fmt.printfln("Using recipe: %s", buildComp.recipe^)
+    buildComp.descriptorRef = descriptor
+    buildComp.recipeID = 0
+    buildComp.recipeRef = resource.GetRecipeByID(0)    //Use NULL Recipe for start
+    buildComp.slots = make([]resource.ItemStack, len(descriptor.inputs)) //Create slots for each input
+
+    recipeSetter, _ := ecs.add_component(&comps.t_RecipeSetter, buildEntity)
+    recipeSetter.newRecipe = descriptor.recipes[0]
 
     inputLen := len(descriptor.inputs)
     buildInput, _ := ecs.add_component(&comps.t_LogisticIntake, buildEntity)

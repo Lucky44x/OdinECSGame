@@ -7,9 +7,8 @@ import types "../../../../libs/datatypes"
 @(private="file")
 MAX_ITEMS_PER_CONV :: 2048
 
-@(private="file")
 ConveyorItem :: struct {
-    time: f32,
+    distance: f32,
     item: LogisticItem
 }
 
@@ -17,7 +16,8 @@ ConveyorItem :: struct {
     Factory Conveyor Component
 */
 c_FactoryConveyor :: struct {
-    itemQueue: types.Queue(ConveyorItem, MAX_ITEMS_PER_CONV)   
+    itemQueue: types.Queue(ConveyorItem, MAX_ITEMS_PER_CONV),
+    speed: f32
 }
 
 t_FactoryConveyor: ecs.Table(c_FactoryConveyor)

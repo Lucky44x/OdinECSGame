@@ -22,6 +22,10 @@ init_systems :: proc(
     init_s_debug_draw_snappoints(db)
     init_s_factory_passthrough_update(db)
     init_s_factory_slot_cleanup_update(db)
+    init_s_factory_render_conv_items(db)
+    init_s_factory_conv_update(db)
+    init_s_factory_machine_update(db)
+    init_s_factory_recipe_setter(db)
 }
 
 @(private)

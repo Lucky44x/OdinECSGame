@@ -88,6 +88,9 @@ LoadItem :: proc(
         name = strings.clone_to_cstring(itemName),
         sprite = sprite
     })
+
+    newID, err2 := GetItemIDByPath(itemId)
+    fmt.printfln("Loaded Item \"%s\" as \"%s\" with numeric id %i", itemName, itemId, newID^)
 }
 
 UnloadItem :: proc(item: ^ItemDescriptor) {

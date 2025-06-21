@@ -9,8 +9,11 @@ import "../../../resource"
     Factory Machine Struct
 */
 c_FactoryMachine :: struct {
-    descriptor: ^resource.BuildingDescriptor,
-    recipe: ^resource.RecipeDescriptor
+    descriptorRef: ^resource.BuildingDescriptor,
+    recipeID: resource.RecipeID,
+    recipeRef: ^resource.RecipeDescriptor,
+    progress: f32,
+    slots: []LogisticStack
 }
 
 t_FactoryMachine: ecs.Table(c_FactoryMachine)

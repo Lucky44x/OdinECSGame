@@ -58,6 +58,8 @@ create_snappoint :: proc(
     passthrough.linkedOutput = linkedOutput
     passthrough.linkedOutputSlot = linkedOutputSlot
 
+    fmt.printfln("Created snappoint logi passthrough: %s", passthrough^)
+
     return snapEntity
 }   
 

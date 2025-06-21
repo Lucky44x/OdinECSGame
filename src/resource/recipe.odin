@@ -91,7 +91,7 @@ LoadRecipe :: proc(
         recipeInputs[ind] = parse_item_stack(type.(json.Object))
     }
 
-    outputArr := recipeObject["inputs"].(json.Array)
+    outputArr := recipeObject["outputs"].(json.Array)
     recipeOutputs := make([]ItemStack, len(outputArr))
     for type, ind in outputArr {
         recipeOutputs[ind] = parse_item_stack(type.(json.Object)) 

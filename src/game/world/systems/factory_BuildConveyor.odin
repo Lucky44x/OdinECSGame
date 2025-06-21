@@ -11,6 +11,8 @@ import "../../../input"
 import "../partioning"
 import "../entities"
 
+import types "../../../../libs/datatypes"
+
 @(private="file")
 v_factory_build_conv: ecs.View
 @(private="file")
@@ -65,6 +67,8 @@ s_factory_build_conv :: proc(args: ^FactoryBuildArgs) {
 
             builder.isActive = true
 
+            intake := comp.add_intake(eid, 1)
+
             convRenderer, _ := ecs.add_component(&comp.t_SplineRenderer, eid)
             convRenderer.startPoint = rl.Vector2{ 0, 0 }
             convRenderer.endPoint = rl.Vector2{ 0, 0 }
@@ -80,6 +84,26 @@ s_factory_build_conv :: proc(args: ^FactoryBuildArgs) {
             transform.scale = { 1, 1 }
             transform.origin = { 0, 0 }
             transform.rotation = 0
+
+            //Set Connection in passthrough
+            if snapConnectible {
+                //fmt.printfln("Found connectible snappoint: %i with comps: %v, %f, %e", snapEID, snapPos, snapDir, snapType)
+
+                logiPassthrough : ^comp.c_LogisticPassthrough = ecs.get_component(&comp.t_LogisticPassthrough, snapEID)
+                assert(logiPassthrough != nil, "Snappoint does not have passthrough comp")
+
+                if logiPassthrough.linkedInput != nil {
+                    fmt.printfln("Somehow, passthrough already has link on intake...")
+                    continue
+                }
+
+                logiPassthrough.linkedInput = intake
+                logiPassthrough.linkedInputSlot = 0
+
+            } else {
+                //TODO: Spawn Own Snappoint
+            }
+
             continue
         }
 
@@ -116,8 +140,10 @@ s_factory_build_conv :: proc(args: ^FactoryBuildArgs) {
         spline.controlPointEnd = spline.endPoint - (endDirVector * handle_length)
 
         if args.inputMap.actions[input.Actions.ConfirmPlacement] == .Pressed {
-            ecs.add_component(&comp.t_FactoryConveyor, eid)
-            intake, output := comp.add_logistics_comps(eid, 1, 1)
+            facConv, _ := ecs.add_component(&comp.t_FactoryConveyor, eid)
+            types.queue_init(&facConv.itemQueue)
+
+            output := comp.add_output(eid, 1)
 
             ecs.remove_component(&comp.t_ConveyorBuilder, eid)
             //ecs.remove_component(&comp.t_SpriteRenderer, eid)

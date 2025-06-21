@@ -42,6 +42,8 @@ s_factory_passthrough_update :: proc() {
         inputStack := &passthroughComp.linkedInput.itemQueues[passthroughComp.linkedInputSlot]
         outputStack := &passthroughComp.linkedOutput.itemQueues[passthroughComp.linkedOutputSlot]
         
+        //fmt.printfln("Stacks: input: %s, output: %s", inputStack^, outputStack^)
+
         //If there isn't any item to move, skip
         if outputStack.count == 0 do continue 
 

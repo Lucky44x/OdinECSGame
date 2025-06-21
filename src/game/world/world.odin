@@ -88,8 +88,8 @@ run_update_systems :: proc(
     factoryAndHashGroup: jobs.Group
     jobs.dispatch(.Medium, 
         jobs.make_job_noarg(&factoryAndHashGroup, run_hashing_systems),
-        jobs.make_job_noarg(&factoryAndHashGroup, run_factory_machine_updates),
-        jobs.make_job_noarg(&factoryAndHashGroup, run_factory_conveyor_updates)
+        jobs.make_job_noarg(&factoryAndHashGroup, systems.s_factory_machine_update),
+        jobs.make_job_noarg(&factoryAndHashGroup, systems.s_factory_conv_update)
     )
     jobs.wait(&factoryAndHashGroup)
     
@@ -103,7 +103,8 @@ run_update_systems :: proc(
     boidsAndBuildingGroup: jobs.Group
     jobs.dispatch(.Medium,
         jobs.make_job_typed(&boidsAndBuildingGroup, &systems.FactoryBuildArgs{inputMap, &WORLD_PARTITION}, systems.s_factory_build_conv),
-        jobs.make_job_noarg(&boidsAndBuildingGroup, systems.s_boids_update)
+        jobs.make_job_noarg(&boidsAndBuildingGroup, systems.s_boids_update),
+        jobs.make_job_noarg(&boidsAndBuildingGroup, systems.s_factory_recipe_setter)
     )
     jobs.wait(&boidsAndBuildingGroup)
 
@@ -139,20 +140,13 @@ run_factory_machine_updates :: proc(_: rawptr) {
     profiling.profile_end()
 }
 
-run_factory_conveyor_updates :: proc(_: rawptr) {
-    profiling.profile_begin("Conveyor Update - TID: ", fmt.tprintf("%i", jobs.current_thread_id()))
-
-    time.sleep(2 * time.Millisecond)
-
-    profiling.profile_end()
-}
-
 run_drawing_systems :: proc() {
     profiling.profile_scope("World Drawing")
 
     rl.BeginMode2D(GameCamera)
 
     systems.s_spline_renderer_render()  //Render Splines first (conveyors are renderer "behind" Sprites (buildings enemies etc.))
+    systems.s_factory_render_conv_items(nil)
     systems.s_sprite_renderer_render()
     
     when ODIN_DEBUG {
