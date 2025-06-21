@@ -31,8 +31,9 @@ init_game_window :: proc(
     height: i32,
     title: cstring
 ) {
-    //Load Resources (Items and Machines)
-    resource.LoadItem("./assets/items/item_dbg.json")
+    resource.LoadAllItems("./assets/items")
+    resource.LoadAllRecipes("./assets/recipes")
+    resource.LoadAllBuildings("./assets/machines")
 
     //Initialize Clay Renderer
     clay_minMemorySize = cast(uint)clay.MinMemorySize()

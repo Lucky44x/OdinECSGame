@@ -13,8 +13,6 @@ ConveyorItem :: struct {
     item: LogisticItem
 }
 
-//TODO: Implement
-
 /*
     Factory Conveyor Component
 */

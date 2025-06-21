@@ -99,6 +99,32 @@ destroy_registries :: proc() {
 }
 
 /*
+Parses a ItemStack from a json Object
+*/
+parse_item_stack :: proc(
+    obj: json.Object
+) -> ItemStack {
+    //TODO: Add fluids later on
+    itemPath := obj["item"].(json.String)
+    itemCount := obj["count"].(json.Float)
+
+    itemID, err := GetItemIDByPath(itemPath)
+    if err != nil {
+        fmt.eprintfln("Could not load Item: %s... %e", itemPath, err)
+        panic("err during stack parsing")
+    }
+    if itemID^ == 0 {
+        fmt.eprintfln("Warning: Item %s in parsing is bound to idx 0 meaning it is a null-item")
+        panic("err during stack parsing")
+    }
+
+    return ItemStack{
+        id = itemID^,
+        count = i32(itemCount)
+    }
+}
+
+/*
 Parses a Renderable from a JSON Object.
 Used to dynamically generate Rendering representations for Items, Buildings etc.
 */

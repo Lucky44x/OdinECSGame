@@ -74,7 +74,7 @@ s_factory_build_conv :: proc(args: ^FactoryBuildArgs) {
             convRenderer.startDir = transform.rotation - 180
             convRenderer.endDir = 0
 
-            convRenderer.thickness = 75
+            convRenderer.thickness = 25
             convRenderer.color = rl.DARKGRAY
 
             transform.scale = { 1, 1 }

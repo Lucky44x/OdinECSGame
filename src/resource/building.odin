@@ -60,6 +60,14 @@ InsertBuilding :: proc(
     return newItem
 }
 
+LoadAllBuildings :: proc(
+    dir: string
+) {
+    pattern := filepath.join({dir, "*.json"})
+    found, err := filepath.glob(pattern)
+    for path in found do LoadBuilding(path)
+}
+
 LoadBuilding :: proc(
     path: string
 ) {
@@ -72,7 +80,7 @@ LoadBuilding :: proc(
     buildingObject := jsonData.(json.Object)
     buildingID := buildingObject["id"].(json.String)
     buildingName := buildingObject["name"].(json.String)
-    buildingRenderable := buildingObject["renderable"].(json.Object)
+    buildingRenderable := buildingObject["sprite"].(json.Object)
     buildingSprite := parse_sprite(buildingRenderable)
     buildingInputArray := buildingObject["inputs"].(json.Array)
     

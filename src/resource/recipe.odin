@@ -55,13 +55,60 @@ InsertRecipe :: proc(
 ) {
     newID, idErr := types.registry_put(&RecipePathRegistry, id, NextRecipeId)
     newRecipe, itemErr := types.registry_put(&RecipeRegistry, NextRecipeId, recipe)
-    NextItemId += 1
+    NextRecipeId += 1
+
+    assert(itemErr == nil, "Error during recipe insertion")
 
     //Do tickrate calculations - item/min divided by 60 -> item/sec divided by 10 (ticks per sec) -> item/tick
     newRecipe.prodRatePerTick = (newRecipe.prodRatePerMin / 60) / 10
 }
 
+LoadAllRecipes :: proc(
+    dir: string
+) {
+    pattern := filepath.join({dir, "*.json"})
+    found, err := filepath.glob(pattern)
+    for path in found do LoadRecipe(path)
+}
+
+LoadRecipe :: proc(
+    path: string
+) {
+    fileData, err := os.read_entire_file(path)
+    defer delete(fileData)
+    
+    jsonData, jErr := json.parse(fileData)
+    defer json.destroy_value(jsonData)
+
+    recipeObject := jsonData.(json.Object)
+    recipeID := recipeObject["id"].(json.String)
+    recipeName := recipeObject["name"].(json.String)
+    productionRate := recipeObject["rate"].(json.Float)
+
+    inputArr := recipeObject["inputs"].(json.Array)
+    recipeInputs := make([]ItemStack, len(inputArr))
+    for type, ind in inputArr {
+        recipeInputs[ind] = parse_item_stack(type.(json.Object))
+    }
+
+    outputArr := recipeObject["inputs"].(json.Array)
+    recipeOutputs := make([]ItemStack, len(outputArr))
+    for type, ind in outputArr {
+        recipeOutputs[ind] = parse_item_stack(type.(json.Object)) 
+    }
+
+    InsertRecipe(recipeID, RecipeDescriptor{
+        name = strings.clone_to_cstring(recipeName),
+        prodRatePerMin = f32(productionRate),
+        prodRatePerTick = 0,
+        inputs = recipeInputs,
+        outputs = recipeOutputs
+    })
+}
+
 UnloadRecipe :: proc(recipe: ^RecipeDescriptor) {
     //Since we manually copy from String to CString we have to manually delete again at end of lifetime
     delete(recipe.name)
+    delete(recipe.inputs)
+    delete(recipe.outputs)
 }

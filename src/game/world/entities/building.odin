@@ -1,5 +1,7 @@
 package entities
 
+import "core:fmt"
+
 import rl "vendor:raylib"
 import ecs "../../../../libs/ode_ecs"
 import comps "../components"
@@ -29,6 +31,11 @@ create_building :: proc(
     buildTransform.position = startPos
 
     buildSpriteRenderer, _ := ecs.add_component(&comps.t_SpriteRenderer, buildEntity)
+
+    buildComp, _ := ecs.add_component(&comps.t_FactoryMachine, buildEntity)
+    buildComp.descriptor = descriptor
+    buildComp.recipe = resource.GetRecipeByID(descriptor.recipes[0])
+    fmt.printfln("Using recipe: %s", buildComp.recipe^)
 
     inputLen := len(descriptor.inputs)
     buildInput, _ := ecs.add_component(&comps.t_LogisticIntake, buildEntity)
@@ -68,6 +75,6 @@ create_building :: proc(
 command_build_building :: proc(
     mousePos: rl.Vector2
 ) {
-    create_building(mousePos, resource.GetBuildingByID(0))
+    create_building(mousePos, resource.GetBuildingByID(1))
     contextmenu.close_current_context_menu()
 }

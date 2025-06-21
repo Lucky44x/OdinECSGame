@@ -61,6 +61,14 @@ InsertItem :: proc(
     NextItemId += 1    
 }
 
+LoadAllItems :: proc(
+    dir: string
+) {
+    pattern := filepath.join({dir, "*.json"})
+    found, err := filepath.glob(pattern)
+    for path in found do LoadItem(path)
+}
+
 LoadItem :: proc(
     path: string
 ) {
