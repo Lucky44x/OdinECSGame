@@ -38,13 +38,14 @@ create_snappoint :: proc(
     snapTransformChild.offsetPosition = pos
     snapTransformChild.offsetRotation = rot
 
-    fmt.printfln("Created snappoint: %s", snapTransformChild^)
+    fmt.printfln("Created snappoint: %s with params: %s - %i -- %s - %i -- %e -- %v -- %f", snapTransformChild^, linkedInput, linkedInputslot, linkedOutput, linkedOutputSlot, type, pos, rot)
 
     if parent == nil do snapTransform.position = pos
 
     snapPointComp, _ := ecs.add_component(&comps.t_ConveyorSnapPoint, snapEntity)
     snapPointComp.radius = 15
     snapPointComp.type = type
+    snapPointComp.direction = rot
 
     snapPointTags, _ := ecs.add_component(&comps.t_Tags, snapEntity)
     snapPointTags ^= { tagging.EntityTags.SNAPPOINT }

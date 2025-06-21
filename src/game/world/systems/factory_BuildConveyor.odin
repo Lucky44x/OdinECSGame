@@ -79,6 +79,7 @@ s_factory_build_conv :: proc(args: ^FactoryBuildArgs) {
 
             transform.scale = { 1, 1 }
             transform.origin = { 0, 0 }
+            transform.rotation = 0
             continue
         }
 
@@ -125,10 +126,10 @@ s_factory_build_conv :: proc(args: ^FactoryBuildArgs) {
                 //TODO: This only covers the ends of conveyors not their starts. Add starts in too, or ake it so conveyros can only be placed on snappoints
 
                 //Check if we connected to a snap-point... if not we have a free-standing connection meaning we will need to create a new snappoint
-                oppositeDirF := spline.endDir
-                if oppositeDirF < 0 do oppositeDirF += 360
-                oppositeDirI := i32(oppositeDirF) % 360
-                entities.create_snappoint(transform, nil, 0, output, 0, .Output, spline.endPoint, f32(oppositeDirI))
+                //oppositeDirF := spline.endDir
+                //if oppositeDirF < 0 do oppositeDirF += 360
+                //oppositeDirI := i32(oppositeDirF) % 360
+                entities.create_snappoint(transform, nil, 0, output, 0, .Output, spline.endPoint, spline.endDir)
             }
         }
     }
