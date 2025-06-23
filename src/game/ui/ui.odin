@@ -9,6 +9,7 @@ import rl "vendor:raylib"
 import contextmenu "contextmenu/renderer"
 import "fonts"
 import "../../input"
+import "window"
 
 @(private="file")
 render_ui_layout :: proc() {
@@ -49,10 +50,13 @@ create_layout :: proc(
 ) -> clay.ClayArray(clay.RenderCommand) {
     
     when ODIN_DEBUG do contextmenu.update_context_menu(inputMap)
-    
+    window.update_window()
+
     clay.BeginLayout()
 
     when ODIN_DEBUG do contextmenu.context_menu_draw()
+
+    window.draw_windows()
 
     return clay.EndLayout()
 }
