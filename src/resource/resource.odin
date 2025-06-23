@@ -8,8 +8,14 @@ import "core:mem"
 import "core:os"
 import "base:runtime"
 import "core:encoding/json"
+import "core:time"
+
+import "core:sync"
 
 import types "../../libs/datatypes"
+
+FILES_TO_LOAD: u32
+LOADED_FILES: u32
 
 //Common DataTypes
 Sprite :: struct {
@@ -41,13 +47,9 @@ Initializes the Resource Systems and it's Registries
 init_registries :: proc() {
     types.registry_init(&AnimationRegistry, UnloadAnimation)
     types.registry_init(&TextureRegistry, UnloadTexture)
-    types.registry_init(&ItemRegistry, UnloadItem)
-    types.registry_init(&RecipeRegistry, UnloadRecipe)
-    types.registry_init(&BuildingRegistry, UnloadBuilding)
-    types.registry_init(&ItemPathRegistry, proc(^ItemID){})
-    types.registry_init(&RecipePathRegistry, proc(^RecipeID){})
-    types.registry_init(&BuildingPathRegistry, proc(^BuildingID){})
     types.registry_init(&TexturePathRegistry, proc(^cstring){})
+
+    make_data_registries()
 
     //Insert the default Item (0)
     InsertItem("item_null", ItemDescriptor{
@@ -83,19 +85,63 @@ init_registries :: proc() {
     building.outputs[0] = { 0, 0.5, 0 }
 }
 
+make_data_registries :: proc() {
+    types.registry_init(&ItemRegistry, UnloadItem)
+    types.registry_init(&RecipeRegistry, UnloadRecipe)
+    types.registry_init(&BuildingRegistry, UnloadBuilding)
+    types.registry_init(&ItemPathRegistry, proc(^ItemID){})
+    types.registry_init(&RecipePathRegistry, proc(^RecipeID){})
+    types.registry_init(&BuildingPathRegistry, proc(^BuildingID){})
+}
+
 /*
 Destroys all Registires and their contents inside the Data System
 */
 destroy_registries :: proc() {
     types.registry_destroy(&AnimationRegistry)
     types.registry_destroy(&TextureRegistry)
+    types.registry_destroy(&TexturePathRegistry)
+    destroy_data_registies()
+}
+
+destroy_data_registies :: proc() {
     types.registry_destroy(&ItemRegistry)
     types.registry_destroy(&RecipeRegistry)
     types.registry_destroy(&BuildingRegistry)
     types.registry_destroy(&ItemPathRegistry)
     types.registry_destroy(&RecipePathRegistry)
-    types.registry_destroy(&TexturePathRegistry)
     types.registry_destroy(&BuildingPathRegistry)
+}
+
+count_data :: proc(
+    dir: string
+) -> int {
+    pattern := filepath.join({dir, "*.json"}, context.temp_allocator)
+    found, err := filepath.glob(pattern, context.temp_allocator)
+    return len(found)
+}
+
+reload_data :: proc() {
+    //Count all files
+    FILES_TO_LOAD = 0
+    FILES_TO_LOAD += u32(count_data("./assets/items"))
+    FILES_TO_LOAD += u32(count_data("./assets/recipes"))
+    FILES_TO_LOAD += u32(count_data("./assets/machines"))
+
+    //Reset registries
+    destroy_data_registies()
+    make_data_registries()
+
+    LoadAllItems("./assets/items")
+    time.sleep(5 * time.Millisecond)
+
+    LoadAllRecipes("./assets/recipes")
+    time.sleep(5 * time.Millisecond)
+    
+    LoadAllBuildings("./assets/machines")
+    time.sleep(5 * time.Millisecond)
+
+    free_all(context.temp_allocator)
 }
 
 /*
@@ -111,11 +157,11 @@ parse_item_stack :: proc(
     itemID, err := GetItemIDByPath(itemPath)
     if err != nil {
         fmt.eprintfln("Could not load Item: %s... %e", itemPath, err)
-        panic("err during stack parsing")
+        //panic("err during stack parsing")
     }
     if itemID^ == 0 {
         fmt.eprintfln("Warning: Item %s in parsing is bound to idx 0 meaning it is a null-item")
-        panic("err during stack parsing")
+        //panic("err during stack parsing")
     }
 
     return ItemStack{

@@ -63,8 +63,8 @@ InsertBuilding :: proc(
 LoadAllBuildings :: proc(
     dir: string
 ) {
-    pattern := filepath.join({dir, "*.json"})
-    found, err := filepath.glob(pattern)
+    pattern := filepath.join({dir, "*.json"}, context.temp_allocator)
+    found, err := filepath.glob(pattern, context.temp_allocator)
     for path in found do LoadBuilding(path)
 }
 
@@ -101,7 +101,10 @@ LoadBuilding :: proc(
     buildingRecipes := make([]RecipeID, len(buildingRecipeArray))
     for i := 0; i < len(buildingRecipeArray); i += 1 {
         val, err := GetRecipeIDByPath(buildingRecipeArray[i].(json.String))
-        if err != nil do buildingRecipes[i] = 0
+        if err != nil { 
+            buildingRecipes[i] = 0 
+            fmt.printfln("Error during building parsing: %e", err)
+        }
         else do buildingRecipes[i] = val^
     }
 
@@ -112,6 +115,14 @@ LoadBuilding :: proc(
         outputs = buildingOutputs,
         recipes = buildingRecipes
     })
+
+    when ODIN_DEBUG {
+        newID, err2 := GetBuildingIDByPath(buildingID)
+        fmt.printfln("Loaded Building \"%s\" as \"%s\" with numeric id %i", buildingName, buildingID, newID^)
+        fmt.printfln("Building-Data: %s", GetBuildingByID(newID^)^)
+    }
+
+    LOADED_FILES += 1
 }
 
 UnloadBuilding :: proc(building: ^BuildingDescriptor) {

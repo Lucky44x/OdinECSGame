@@ -66,8 +66,8 @@ InsertRecipe :: proc(
 LoadAllRecipes :: proc(
     dir: string
 ) {
-    pattern := filepath.join({dir, "*.json"})
-    found, err := filepath.glob(pattern)
+    pattern := filepath.join({dir, "*.json"}, context.temp_allocator)
+    found, err := filepath.glob(pattern, context.temp_allocator)
     for path in found do LoadRecipe(path)
 }
 
@@ -104,6 +104,13 @@ LoadRecipe :: proc(
         inputs = recipeInputs,
         outputs = recipeOutputs
     })
+
+    when ODIN_DEBUG {
+        newID, err2 := GetRecipeIDByPath(recipeID)
+        fmt.printfln("Loaded Recipe \"%s\" as \"%s\" with numeric id %i", recipeName, recipeID, newID^)
+        fmt.printfln("Recipe-Data: %s", GetRecipeByID(newID^)^)
+    }
+    LOADED_FILES += 1
 }
 
 UnloadRecipe :: proc(recipe: ^RecipeDescriptor) {

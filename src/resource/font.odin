@@ -27,5 +27,16 @@ LoadFont :: proc(
     rl.SetTextureFilter(clayrl.raylib_fonts[fontId].font.texture, rl.TextureFilter.TRILINEAR)
 }
 
+UnloadFonts :: proc() {
+    for &font in clayrl.raylib_fonts {
+        if &font == nil do continue
+    }
+}
+
+UnloadFont :: proc(
+    fontId: u16
+) {
+    free(&clayrl.raylib_fonts[fontId])
+}
 
 //TODO Add Unloading

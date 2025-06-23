@@ -78,9 +78,14 @@ s_factory_conv_update :: proc(_: rawptr) {
         if oldestItem == nil do continue
         if oldestItem.distance < 10 do continue
 
-        convItem, _ := types.queue_dequeue(&conv.itemQueue) //Dequeue from Conveyor
+        convItem, _ := types.queue_dequeue_ptr(&conv.itemQueue) //Dequeue from Conveyor
         if output.itemQueues[0].id == 0 do output.itemQueues[0].id = convItem.item  //Set Output Slot Item-Type if not already set
+        if output.itemQueues[0].id != convItem.item do continue //Type mismatch -> skip
+
         output.itemQueues[0].count += 1 //Increment count of items in said output slot
+        //Reset Distace
+        convItem.distance = 0
+        convItem.item = 0
     }
 
     ecs.iterator_reset(&it_factory_conv_update)

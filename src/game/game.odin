@@ -31,10 +31,6 @@ init_game_window :: proc(
     height: i32,
     title: cstring
 ) {
-    resource.LoadAllItems("./assets/items")
-    resource.LoadAllRecipes("./assets/recipes")
-    resource.LoadAllBuildings("./assets/machines")
-
     //Initialize Clay Renderer
     clay_minMemorySize = cast(uint)clay.MinMemorySize()
     clay_memory = make([^]u8, clay_minMemorySize) //Crazy way to allocate a certain amount of bytes, but hey, if it works it works
@@ -75,6 +71,8 @@ init_game_window :: proc(
 
     profiling._profiler_init()
 
+    resource.reload_data()
+
     world.init_world()
 }
 
@@ -95,6 +93,8 @@ deinit_game_window :: proc() {
     profiling._profiler_shutdown()
 
     free(clay_memory)
+
+    resource.UnloadFonts()
 }
 
 /*

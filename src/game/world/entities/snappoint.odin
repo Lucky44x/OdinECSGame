@@ -53,6 +53,8 @@ create_snappoint :: proc(
     snapPointHashable, _ := ecs.add_component(&comps.t_HashableEntity, snapEntity)    
 
     passthrough, _ := ecs.add_component(&comps.t_LogisticPassthrough, snapEntity)
+    passthrough.linkedInputTransform = linkedInTrans
+    passthrough.linkedOutputTransform = linkedOutTrans
     passthrough.linkedInput = linkedInput
     passthrough.linkedInputSlot = linkedInputslot
     passthrough.linkedOutput = linkedOutput

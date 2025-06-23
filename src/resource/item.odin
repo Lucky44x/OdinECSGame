@@ -64,8 +64,8 @@ InsertItem :: proc(
 LoadAllItems :: proc(
     dir: string
 ) {
-    pattern := filepath.join({dir, "*.json"})
-    found, err := filepath.glob(pattern)
+    pattern := filepath.join({dir, "*.json"}, context.temp_allocator)
+    found, err := filepath.glob(pattern, context.temp_allocator)
     for path in found do LoadItem(path)
 }
 
@@ -89,8 +89,12 @@ LoadItem :: proc(
         sprite = sprite
     })
 
-    newID, err2 := GetItemIDByPath(itemId)
-    fmt.printfln("Loaded Item \"%s\" as \"%s\" with numeric id %i", itemName, itemId, newID^)
+    when ODIN_DEBUG {
+        newID, err2 := GetItemIDByPath(itemId)
+        fmt.printfln("Loaded Item \"%s\" as \"%s\" with numeric id %i", itemName, itemId, newID^)
+        fmt.printfln("Item-Data: %s", GetItemByID(newID^)^)
+    }
+    LOADED_FILES += 1
 }
 
 UnloadItem :: proc(item: ^ItemDescriptor) {
