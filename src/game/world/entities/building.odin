@@ -48,7 +48,7 @@ create_building :: proc(
 
     for i : u8 = 0; i < u8(inputLen); i += 1 {
         create_snappoint(
-            buildTransform, buildInput, i, nil, 0, .Input, vec3ToVec2(descriptor.inputs[i], 0, 1), descriptor.inputs[i][2]
+            buildTransform, buildInput, i, nil, 0, buildTransform, nil, .Input, vec3ToVec2(descriptor.inputs[i], 0, 1), descriptor.inputs[i][2]
         )
     }
 
@@ -59,7 +59,7 @@ create_building :: proc(
 
     for i : u8 = 0; i < u8(outputLen); i += 1 {
         create_snappoint(
-            buildTransform, nil, 0, buildOutput, i, .Output, vec3ToVec2(descriptor.outputs[i], 0, 1), descriptor.outputs[i][2]
+            buildTransform, nil, 0, buildOutput, i, nil, buildTransform, .Output, vec3ToVec2(descriptor.outputs[i], 0, 1), descriptor.outputs[i][2]
         )
     }
 

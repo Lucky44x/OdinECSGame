@@ -10,10 +10,7 @@ import "core:fmt"
 import contextmenu "../../ui/contextmenu/items"
 
 init_snappoint :: proc() {
-    contextmenu.register_world_item({ 
-        label = "Spawn Snappoint", 
-        option = command_build_snappoint
-    })
+
 }
 
 /*
@@ -25,6 +22,9 @@ create_snappoint :: proc(
     linkedInputslot: u8,
     linkedOutput: ^comps.c_LogisticOutput,
     linkedOutputSlot: u8,
+
+    linkedInTrans, linkedOutTrans: ^comps.c_Transform,
+
     type: comps.SNAPTYPE,
     pos: rl.Vector2,
     rot: f32
@@ -61,12 +61,4 @@ create_snappoint :: proc(
     fmt.printfln("Created snappoint logi passthrough: %s", passthrough^)
 
     return snapEntity
-}   
-
-@(private="file")
-command_build_snappoint :: proc(
-    mousePos: rl.Vector2
-) {
-    create_snappoint(nil, nil, 0, nil, 0, .General, mousePos, 0)
-    contextmenu.close_current_context_menu()
 }

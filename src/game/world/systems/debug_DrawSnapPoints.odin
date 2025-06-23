@@ -45,6 +45,12 @@ s_draw_debug_snappoints :: proc() {
         vec2Dir = rl.Vector2Normalize(vec2Dir)
         vec2EndPos += vec2Dir * snappoint.radius
         rl.DrawLineV(transform.position, vec2EndPos, rl.BLACK)
+
+        if rl.CheckCollisionPointCircle(rl.GetMousePosition(), transform.position, snappoint.radius) {
+            //Highlight linked transforms
+            if passthrough.linkedInputTransform != nil do rl.DrawCircleLinesV(passthrough.linkedInputTransform.position, 25, rl.PINK)
+            if passthrough.linkedOutputTransform != nil do rl.DrawCircleLinesV(passthrough.linkedOutputTransform.position, 25, rl.LIME)
+        }
     }
 
     ecs.iterator_reset(&it_debug_snappoints)

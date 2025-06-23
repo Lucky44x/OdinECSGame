@@ -11,7 +11,8 @@ c_LogisticPassthrough :: struct {
     linkedInput: ^c_LogisticIntake,
     linkedInputSlot: u8,
     linkedOutput: ^c_LogisticOutput,
-    linkedOutputSlot: u8
+    linkedOutputSlot: u8,
+    linkedInputTransform, linkedOutputTransform: ^c_Transform
 }
 
 t_LogisticPassthrough: ecs.Table(c_LogisticPassthrough)

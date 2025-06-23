@@ -99,9 +99,10 @@ s_factory_build_conv :: proc(args: ^FactoryBuildArgs) {
 
                 logiPassthrough.linkedInput = intake
                 logiPassthrough.linkedInputSlot = 0
+                logiPassthrough.linkedInputTransform = transform
 
             } else {
-                //TODO: Spawn Own Snappoint
+                entities.create_snappoint(transform, intake, 0, nil, 0, transform, nil, .Input, { 0, 0 }, convRenderer.startDir)
             }
 
             continue
@@ -148,14 +149,20 @@ s_factory_build_conv :: proc(args: ^FactoryBuildArgs) {
             ecs.remove_component(&comp.t_ConveyorBuilder, eid)
             //ecs.remove_component(&comp.t_SpriteRenderer, eid)
 
-            if !snapPointFound {
-                //TODO: This only covers the ends of conveyors not their starts. Add starts in too, or ake it so conveyros can only be placed on snappoints
+            if snapConnectible {
+                logiPassthrough : ^comp.c_LogisticPassthrough = ecs.get_component(&comp.t_LogisticPassthrough, snapEID)
+                assert(logiPassthrough != nil, "Snappoint does not have passthrough comp")
 
-                //Check if we connected to a snap-point... if not we have a free-standing connection meaning we will need to create a new snappoint
-                //oppositeDirF := spline.endDir
-                //if oppositeDirF < 0 do oppositeDirF += 360
-                //oppositeDirI := i32(oppositeDirF) % 360
-                entities.create_snappoint(transform, nil, 0, output, 0, .Output, spline.endPoint, spline.endDir)
+                if logiPassthrough.linkedOutput != nil {
+                    fmt.printfln("Somehow, passthrough already has link on output...")
+                    continue
+                }
+
+                logiPassthrough.linkedOutput = output
+                logiPassthrough.linkedOutputSlot = 0
+                logiPassthrough.linkedOutputTransform = transform
+            } else {
+                entities.create_snappoint(transform, nil, 0, output, 0, nil, transform, .Output, spline.endPoint, spline.endDir)
             }
         }
     }
