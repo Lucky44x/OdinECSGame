@@ -227,7 +227,9 @@ render_sprite :: proc(
     pos: rl.Vector2,
     rotation: f32
 ) {
-    dstRec := rl.Rectangle {
+    if sprite == nil do return
+    
+    dstRec := rl.Rectangle {    //Null pointer ??????? TODO: Fix
         x = pos[0],
         y = pos[1],
         width = sprite.scaling[0],
