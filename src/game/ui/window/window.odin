@@ -3,12 +3,14 @@ package window
 import "core:container/intrusive/list"
 import "../../../../libs/clay"
 import "../fonts"
+import rl "vendor:raylib"
 
 Windows: [dynamic]UiWindow
 
 UiWindow :: struct {
     title: string,
-    offset: clay.Vector2,
+    windowid: u32,
+    offset, grabOffset: clay.Vector2,
     params: rawptr,
     constructor: proc(rawptr),
     isOpen: bool
@@ -20,6 +22,10 @@ AddWindow :: proc(
     window: UiWindow,
 ) {
     append(&Windows, window)
+    ptr := &Windows[len(&Windows) - 1]
+
+    ptr.windowid = auto_cast len(Windows)
+    ptr.isOpen = true
 }
 
 CleanWindows :: proc() {
@@ -53,9 +59,9 @@ update_windows :: proc() {
 
 draw_window :: proc(window: ^UiWindow) {
     if clay.UI()({
-        id = clay.ID(window.title),
+        id = clay.ID("window-frame", window.windowid),
         layout = {
-            sizing = { width = clay.SizingFit({}), height = clay.SizingFit({}) },
+            sizing = { width = clay.SizingFit({ 75, 1024 }), height = clay.SizingFit({}) },
             padding = { 8, 8, 8, 8 },
             childGap = 8,
             layoutDirection = clay.LayoutDirection.TopToBottom
@@ -78,7 +84,7 @@ draw_window :: proc(window: ^UiWindow) {
         
         //Render Header
         if clay.UI()({
-            id = clay.ID(window.title, 1),
+            id = clay.ID("window-header", window.windowid),
             layout = {
                 sizing = { width = clay.SizingGrow({}), height = clay.SizingFit({}) },
                 padding = { 8, 8, 8, 8 },
@@ -88,24 +94,47 @@ draw_window :: proc(window: ^UiWindow) {
             backgroundColor = clay.Color({ 65, 65, 65, 255 })
         }) {
             //Title
+            /*
             clay.TextDynamic(window.title, &clay.TextElementConfig{
                 fontId = fonts.FONT_ID_TITLE_32,
                 fontSize = 32,
                 textColor = clay.Color({ 200, 200, 200, 255 }),
                 textAlignment = clay.TextAlignment.Left
             })
+                */
 
             //Close Button
             if clay.UI()({
-                id = clay.ID(window.title, 2),
+                id = clay.ID("window-button", window.windowid),
                 layout = {
-                    sizing = { width = clay.SizingFit({}), height = clay.SizingGrow({}) },
+                    sizing = { width = clay.SizingFit({ 15, 15 }), height = clay.SizingGrow({ 15, 0 }) },
                     padding = { 8, 8, 8, 8 },
                     childAlignment = { x = clay.LayoutAlignmentX.Center, y = clay.LayoutAlignmentY.Center }
                 },
-                backgroundColor = clay.Color({ 80, 80, 80, 255 })
             }) {
+                backCol := clay.Color{ 80, 80, 80, 255 }
+                if clay.Hovered() do backCol = clay.Color{ 255, 0, 0, 255 }
+                
+                if clay.UI()({
+                    id = clay.ID("window-button-inner", window.windowid),
+                    layout = {
+                        sizing = { width = clay.SizingGrow({}), height = clay.SizingGrow({}) },
+                        padding = { 8, 8, 8, 8 },
+                        childAlignment = { x = clay.LayoutAlignmentX.Center, y = clay.LayoutAlignmentY.Center },
+                    },
+                    backgroundColor = backCol
+                }) {
+                    /*
+                    clay.Text("X", &clay.TextElementConfig{
+                        fontId = fonts.FONT_ID_TITLE_32,
+                        fontSize = 16,
+                        textColor = clay.Color{ 200, 200, 200, 255 },
+                        textAlignment = clay.TextAlignment.Center
+                    })
+                        */
 
+                    if clay.Hovered() && rl.IsMouseButtonPressed(.LEFT) do window.isOpen = false
+                }
             }
         }
     }

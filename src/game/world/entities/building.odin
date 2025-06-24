@@ -2,12 +2,15 @@ package entities
 
 import "core:fmt"
 
+import "core:strings"
+
 import rl "vendor:raylib"
 import ecs "../../../../libs/ode_ecs"
 import comps "../components"
 import "../../../resource"
 
 import contextmenu "../../ui/contextmenu/items"
+import window "../../ui/window"
 
 init_building :: proc() {
     contextmenu.register_world_item({ 
@@ -72,7 +75,41 @@ create_building :: proc(
 
     buildTransform.position = startPos
 
+    when ODIN_DEBUG {
+        buildDebug, _ := ecs.add_component(&comps.t_DebugInspectable, buildEntity)
+        buildDebug.collisionSize = buildTransform.scale
+        buildDebug.collisionOffset = { -.5, -.5 }
+        buildDebug.menu = contextmenu.ContextMenu {
+            title = "Building",
+            items = make([]contextmenu.ContextMenuItem, 2)           
+        }
+        buildDebug.menu.items[0] = contextmenu.ContextMenuItem {
+            label = "Open Window",
+            option = command_open_building_window
+        }
+        buildDebug.menu.items[1] = contextmenu.ContextMenuItem {
+            label = "Close",
+            option = proc(){ contextmenu.close_current_context_menu() }
+        }
+    }
+
     return buildEntity
+}
+
+@(private="file")
+command_open_building_window :: proc(
+    db: ^ecs.Database,
+    eid: ecs.entity_id,
+    mousePos: rl.Vector2,
+) {
+    building : ^comps.c_FactoryMachine = ecs.get_component(&comps.t_FactoryMachine, eid)
+
+    window.AddWindow(window.UiWindow {
+        title = strings.clone_from_cstring(building.descriptorRef.name),
+        params = rawptr(building),
+        offset = mousePos,
+        constructor = proc(_: rawptr) {}
+    })
 }
 
 @(private="file")

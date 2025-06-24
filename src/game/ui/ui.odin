@@ -50,7 +50,7 @@ create_layout :: proc(
 ) -> clay.ClayArray(clay.RenderCommand) {
     
     when ODIN_DEBUG do contextmenu.update_context_menu(inputMap)
-    window.update_window()
+    window.update_windows()
 
     clay.BeginLayout()
 
