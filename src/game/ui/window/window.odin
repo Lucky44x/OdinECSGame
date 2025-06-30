@@ -4,6 +4,7 @@ import "core:container/intrusive/list"
 import "../../../../libs/clay"
 import "../fonts"
 import rl "vendor:raylib"
+import "core:fmt"
 
 Windows: [dynamic]UiWindow
 
@@ -13,7 +14,21 @@ UiWindow :: struct {
     offset, grabOffset: clay.Vector2,
     params: rawptr,
     constructor: proc(rawptr),
-    isOpen: bool
+    isOpen, isDragging: bool
+}
+
+WindowTitleStyle: clay.TextElementConfig = {
+    fontId = fonts.FONT_ID_BODY_16,
+    fontSize = 16,
+    textColor = clay.Color({ 200, 200, 200, 255 }),
+    textAlignment = clay.TextAlignment.Left
+}
+
+WindowButtonStyle: clay.TextElementConfig = {
+    fontId = fonts.FONT_ID_BODY_16,
+    fontSize = 16,
+    textColor = clay.Color{ 200, 200, 200, 255 },
+    textAlignment = clay.TextAlignment.Center
 }
 
 GetWindowParams :: proc($T: typeid, self: rawptr) -> T { return cast(T)self }
@@ -54,7 +69,7 @@ draw_windows :: proc() {
 }
 
 update_windows :: proc() {
-
+    CleanWindows()
 }
 
 draw_window :: proc(window: ^UiWindow) {
@@ -62,11 +77,10 @@ draw_window :: proc(window: ^UiWindow) {
         id = clay.ID("window-frame", window.windowid),
         layout = {
             sizing = { width = clay.SizingFit({ 75, 1024 }), height = clay.SizingFit({}) },
-            padding = { 8, 8, 8, 8 },
+            padding = { 0, 0, 0, 0 },
             childGap = 8,
             layoutDirection = clay.LayoutDirection.TopToBottom
         },
-        cornerRadius = { 5, 5, 5, 5 },
         floating = {
             offset = window.offset,
             expand = {},
@@ -79,7 +93,8 @@ draw_window :: proc(window: ^UiWindow) {
             clipTo = clay.FloatingClipToElement.None,
             pointerCaptureMode = clay.PointerCaptureMode.Capture
         },
-        backgroundColor = clay.Color({ 80, 80, 80, 255 })
+        backgroundColor = clay.Color({ 80, 80, 80, 255 }),
+        cornerRadius = { 15, 15, 15, 15 },
     }) {
         
         //Render Header
@@ -89,19 +104,35 @@ draw_window :: proc(window: ^UiWindow) {
                 sizing = { width = clay.SizingGrow({}), height = clay.SizingFit({}) },
                 padding = { 8, 8, 8, 8 },
                 childGap = 8,
+                childAlignment = clay.ChildAlignment{
+                    x = clay.LayoutAlignmentX.Left,
+                    y = clay.LayoutAlignmentY.Center
+                },
                 layoutDirection = clay.LayoutDirection.LeftToRight
             },
-            backgroundColor = clay.Color({ 65, 65, 65, 255 })
+            backgroundColor = clay.Color({ 65, 65, 65, 255 }),
+            cornerRadius = { 15, 15, 0, 0 },
         }) {
+            if clay.Hovered() && rl.IsMouseButtonPressed(.LEFT) {
+                window.isDragging = true
+                window.grabOffset = window.offset - rl.GetMousePosition()
+            }
+
+            if window.isDragging {
+                window.offset = rl.GetMousePosition() + window.grabOffset
+                
+                if rl.IsMouseButtonReleased(.LEFT) do window.isDragging = false
+            }
+
             //Title
-            /*
-            clay.TextDynamic(window.title, &clay.TextElementConfig{
-                fontId = fonts.FONT_ID_TITLE_32,
-                fontSize = 32,
-                textColor = clay.Color({ 200, 200, 200, 255 }),
-                textAlignment = clay.TextAlignment.Left
-            })
-                */
+            clay.TextDynamic(window.title, &WindowTitleStyle)
+
+            if clay.UI()({
+                id = clay.ID("window-header-spacer", window.windowid),
+                layout = {
+                    sizing = { width = clay.SizingFixed(25), height = clay.SizingFixed(15) }
+                }
+            }) {}
 
             //Close Button
             if clay.UI()({
@@ -124,19 +155,19 @@ draw_window :: proc(window: ^UiWindow) {
                     },
                     backgroundColor = backCol
                 }) {
-                    /*
-                    clay.Text("X", &clay.TextElementConfig{
-                        fontId = fonts.FONT_ID_TITLE_32,
-                        fontSize = 16,
-                        textColor = clay.Color{ 200, 200, 200, 255 },
-                        textAlignment = clay.TextAlignment.Center
-                    })
-                        */
+                    //TODO: Fix Later - Font ID gets mutated for some reason
 
-                    if clay.Hovered() && rl.IsMouseButtonPressed(.LEFT) do window.isOpen = false
+                    if clay.Hovered() && rl.IsMouseButtonPressed(.LEFT) {
+                        window.isOpen = false
+                    }
+
+                    clay.Text("X", &WindowButtonStyle)
                 }
             }
         }
+
+        //Render Contents
+        window.constructor(window.params)
     }
 
     window.constructor(window.params)

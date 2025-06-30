@@ -12,6 +12,8 @@ import "../../../resource"
 import contextmenu "../../ui/contextmenu/items"
 import window "../../ui/window"
 
+import "../../../../libs/clay"
+
 init_building :: proc() {
     contextmenu.register_world_item({ 
         label = "Build Building", 
@@ -108,8 +110,17 @@ command_open_building_window :: proc(
         title = strings.clone_from_cstring(building.descriptorRef.name),
         params = rawptr(building),
         offset = mousePos,
-        constructor = proc(_: rawptr) {}
+        constructor = proc(_: rawptr) {
+            if clay.UI()({
+                id = clay.ID("window-spacer", 0),
+                layout = {
+                    sizing = { width = clay.SizingFixed(25), height = clay.SizingFixed(15) }
+                }
+            }) {}
+        }
     })
+
+    contextmenu.close_current_context_menu()
 }
 
 @(private="file")
