@@ -97,7 +97,7 @@ LoadRecipe :: proc(
         recipeOutputs[ind] = parse_item_stack(type.(json.Object)) 
     }
 
-    InsertRecipe(recipeID, RecipeDescriptor{
+    InsertRecipe(strings.clone(recipeID), RecipeDescriptor{
         name = strings.clone_to_cstring(recipeName),
         prodRatePerMin = f32(productionRate),
         prodRatePerTick = 0,

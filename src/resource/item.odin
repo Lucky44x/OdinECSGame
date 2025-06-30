@@ -84,7 +84,7 @@ LoadItem :: proc(
     spriteObj := itemObject["sprite"].(json.Object)
     sprite := parse_sprite(spriteObj)
 
-    InsertItem(itemId, ItemDescriptor{
+    InsertItem(strings.clone(itemId), ItemDescriptor{
         name = strings.clone_to_cstring(itemName),
         sprite = sprite
     })

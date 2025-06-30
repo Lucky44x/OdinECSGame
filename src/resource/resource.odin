@@ -133,13 +133,15 @@ reload_data :: proc() {
     make_data_registries()
 
     LoadAllItems("./assets/items")
-    time.sleep(5 * time.Millisecond)
+    //time.sleep(5 * time.Millisecond)
+
+    fmt.printfln("Loaded Items: paths: %s\n --- \n items: %s", ItemPathRegistry, ItemRegistry)
 
     LoadAllRecipes("./assets/recipes")
-    time.sleep(5 * time.Millisecond)
+    //time.sleep(5 * time.Millisecond)
     
     LoadAllBuildings("./assets/machines")
-    time.sleep(5 * time.Millisecond)
+    //time.sleep(5 * time.Millisecond)
 
     free_all(context.temp_allocator)
 }
@@ -156,12 +158,14 @@ parse_item_stack :: proc(
 
     itemID, err := GetItemIDByPath(itemPath)
     if err != nil {
-        fmt.eprintfln("Could not load Item: %s... %e", itemPath, err)
-        //panic("err during stack parsing")
+        fmt.eprintfln("Could not load Item: %s... %e, %s", itemPath, err, ItemPathRegistry)
     }
-    if itemID^ == 0 {
+
+    assert(itemID != nil, fmt.aprintfln("Could not load Item %s", ItemRegistry))
+
+    if itemID == nil || itemID^ == 0 {
         fmt.eprintfln("Warning: Item %s in parsing is bound to idx 0 meaning it is a null-item")
-        //panic("err during stack parsing")
+        panic("err during stack parsing")
     }
 
     return ItemStack{

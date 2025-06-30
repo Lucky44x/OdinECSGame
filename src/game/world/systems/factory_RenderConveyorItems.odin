@@ -42,7 +42,8 @@ s_factory_render_conv_items :: proc(args: ^FactoryBuildArgs) {
         for i : u32 = 0; i < conv.itemQueue.count; i += 1 {
             if idx >= conv.itemQueue.write do break //Better safe than sorry
 
-            item : ^comp.ConveyorItem = &conv.itemQueue.ring[i]
+            item : ^comp.ConveyorItem = &conv.itemQueue.ring[idx]
+            if item == nil do continue
 
             renderPos := transform.position + rl.GetSplinePointBezierCubic(
                 spline.startPoint, spline.controlPointStart,
@@ -51,6 +52,7 @@ s_factory_render_conv_items :: proc(args: ^FactoryBuildArgs) {
             )
 
             itemDescriptor := resource.GetItemByID(item.item)
+
             resource.render_sprite(&itemDescriptor.sprite, renderPos, 0)
 
             //rl.DrawCircleV(renderPos, 15, rl.RED)
