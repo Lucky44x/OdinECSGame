@@ -14,6 +14,7 @@ import window "../../ui/window"
 import "../../ui/fonts"
 
 import "../../../../libs/clay"
+import clayrl "../../../clay_render"
 
 WindowSlotStyle : clay.TextElementConfig = {
     fontId = fonts.FONT_ID_BODY_16,
@@ -215,7 +216,45 @@ ui_building_slot :: proc(
         backgroundColor = clay.Color{ 65, 65, 65, 255 },
         cornerRadius = { 5, 5, 5, 5 }
     }) {
-        clay.TextDynamic(fmt.tprintf("%i", stack.count), &WindowSlotStyle)
+        if stack.id == 0 do return //TODO: Implement NULL Item placeholder
+
+        //Get Stack item type
+        item := resource.GetItemByID(stack.id)
+        src := item.sprite.source
+        if type_of(src) != resource.TextureID do return //TODO: Implement other visuals
+        srcID := src.(resource.TextureID)
+        srcTex := resource.GetTextureByID(srcID)
+
+        srcRec: rl.Rectangle
+        srcRef: ^rl.Texture2D
+
+        #partial switch &type in srcTex {
+            case resource.SubTexture:
+                srcRec = resource.get_src_rec(&type)
+                source := resource.GetTextureByID(type.src)
+                assert(type_of(source) == resource.TextureAtlas, "Source Texture was not an atlas")
+                temp := source.(resource.TextureAtlas)
+                srcRef = &temp.src
+                break
+            case rl.Texture2D:
+                srcRec = resource.get_src_rec(&type)
+                srcRef = &type
+                break
+        }
+        data := new(clayrl.Raylib_Image, context.temp_allocator)
+        data.src = srcRef
+        data.rec = srcRec
+
+        //Render Image
+        if clay.UI()({
+            layout = {
+                sizing = { width = clay.SizingGrow({}), height = clay.SizingGrow({}) },
+            },
+            cornerRadius = { 5, 5, 5, 5 },
+            image = { rawptr(&data) }
+        }) {
+            //clay.TextDynamic(fmt.tprintf("%i", stack.count), &WindowSlotStyle)
+        }
     }
 }
 

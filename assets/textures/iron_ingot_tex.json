@@ -1,7 +1,7 @@
 {
-    "id": "iron_ore",
+    "id": "iron_ingot",
     "type": "subtexture",
     "src": "item_sheet",
     "offset_type": "relative",
-    "offset": [ 14, 1 ]
+    "offset": [ 7, 4 ]
 }

@@ -8,6 +8,7 @@ import "core:mem"
 
 import types "../../libs/datatypes"
 
+/*
 @(private)
 AnimationRegistry: types.Registry(cstring, AnimationClip)
 
@@ -146,3 +147,4 @@ animation_clip_create :: proc(
         frames = make([]Renderable, frameCount)
     }
 }
+    */

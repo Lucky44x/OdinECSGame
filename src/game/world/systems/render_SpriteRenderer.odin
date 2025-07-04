@@ -45,25 +45,8 @@ s_sprite_renderer_render :: proc() {
 
         //Render shit
         switch type in spriteRend.sprite {
-            case ^rl.Texture2D:
-                //rl.DrawTextureEx(type^, transform.position, transform.rotation, transform.scale[0], rl.WHITE)
-                width, height := f32(type.width) * transform.scale[0], f32(type.height) * transform.scale[1]
-                srcRec := rl.Rectangle{
-                    f32(type.width) * multX,
-                    f32(type.height) * multY,
-                    f32(type.width) * multW, f32(type.height) * multH
-                }
-                
-                rl.DrawTexturePro(type^, srcRec, dstRec, origin_px, transform.rotation, spriteRend.color)
-                break
-            case resource.SubImage:
-                srcRec := type.srcRec
-                srcRec.x += type.srcRec.width * multX
-                srcRec.y += type.srcRec.height * multY
-                srcRec.width *= multW
-                srcRec.height *= multH
-                
-                rl.DrawTexturePro(type.tex^, srcRec, dstRec, origin_px, transform.rotation, spriteRend.color)
+            case resource.TextureID:
+                resource.draw_texture(type, dstRec, origin_px, transform.rotation, spriteRend.color)
                 break
             case resource.PrimitiveEllipse:
                 rl.DrawEllipse(i32(renderPosition[0]), i32(renderPosition[1]), transform.scale[0], transform.scale[1], spriteRend.color)

@@ -9,7 +9,7 @@ import "../../../resource"
 */
 
 c_Animator :: struct {
-    clip: ^resource.AnimationClip,
+    //clip: ^resource.AnimationClip,
     currentTime, animationSpeed: f32,
     currentFrame: i32
 }

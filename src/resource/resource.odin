@@ -1,5 +1,6 @@
 package resource
 
+import "core:text/edit"
 import rl "vendor:raylib"
 import "core:fmt"
 import "core:path/filepath"
@@ -25,15 +26,9 @@ Sprite :: struct {
 }
 
 Renderable :: union {
-    ^rl.Texture2D,
-    SubImage,
+    TextureID,
     PrimitiveEllipse,
     PrimitiveRect
-}
-
-SubImage :: struct {
-    tex: ^rl.Texture2D,
-    srcRec: rl.Rectangle
 }
 
 PrimitiveRect :: struct {}
@@ -45,7 +40,7 @@ PrimitiveEllipse :: struct {}
 Initializes the Resource Systems and it's Registries
 */
 init_registries :: proc() {
-    types.registry_init(&AnimationRegistry, UnloadAnimation)
+    //types.registry_init(&AnimationRegistry, UnloadAnimation)
 
     make_data_registries()
 
@@ -101,7 +96,7 @@ make_data_registries :: proc() {
 Destroys all Registires and their contents inside the Data System
 */
 destroy_registries :: proc() {
-    types.registry_destroy(&AnimationRegistry)
+    //types.registry_destroy(&AnimationRegistry)
     destroy_data_registies()
 }
 
@@ -187,7 +182,8 @@ Parses a Renderable from a JSON Object.
 Used to dynamically generate Rendering representations for Items, Buildings etc.
 */
 parse_sprite :: proc(
-    obj: json.Object
+    obj: json.Object,
+    loc := #caller_location
 ) -> Sprite {
     type := obj["src"].(json.String)
 
@@ -221,15 +217,10 @@ parse_sprite :: proc(
         if strings.contains(type, "rectangle") do finalSprite.source = PrimitiveRect{}
         else if strings.contains(type, "ellipse") do finalSprite.source = PrimitiveEllipse{}
     }
-    else if strings.starts_with(type, "subimage") {
-        finalSprite.source = SubImage{
-            //TODO: Implement SubImage as source
-        }
-    }
     else {
-        //If not primive or subimage, assume it's a texture
-        //finalSprite.source = GetTextureByID(type)
-        //TODO: Replace with new call procedure
+        //Assume it's a texture and try to get ID
+        id, err := GetTextureIDByPath(type)
+        assert(id != nil, fmt.tprintfln("Could not find texture %s \n %s", type, loc))
     }
 
     return finalSprite
@@ -259,4 +250,34 @@ render_sprite :: proc(
             rl.DrawRectanglePro(dstRec, origin_px, rotation, sprite.color)
             break
     }
+}
+
+draw_texture :: proc(
+    id: TextureID, 
+    destination: rl.Rectangle, 
+    origin: rl.Vector2, 
+    rotation: f32, 
+    tint: rl.Color,
+    loc := #caller_location
+) {
+    texture := GetTextureByID(id)
+    assert(texture != nil, "texture could not be read", loc)
+
+    tex: rl.Texture2D 
+    srcRec: rl.Rectangle
+    #partial switch &type in texture {
+        case rl.Texture2D:
+            srcRec = get_src_rec(&type)
+            tex = type
+            break
+        case SubTexture:
+            srcRec = get_src_rec(&type)
+            source := GetTextureByID(type.src)
+            assert(type_of(source) == TextureAtlas, "Source Texture was not an atlas", loc)
+            temp := source.(TextureAtlas)
+            tex = temp.src
+            break
+    }
+
+    rl.DrawTexturePro(tex, srcRec, destination, origin, rotation, tint)
 }

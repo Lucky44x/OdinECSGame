@@ -3,13 +3,13 @@
     "name": "Debug-Item",
     "stack-size": 32,
     "sprite": {
-        "src": "primitive:rectangle",
+        "src": "iron_ingot",
         "origin": [ 0.5, 0.5 ],
-        "scaling": [ 5, 5 ],
+        "scaling": [ 1, 1 ],
         "color": {
             "r": 225,
-            "g": 125,
-            "b": 125,
+            "g": 255,
+            "b": 255,
             "a": 255
         }
     }
