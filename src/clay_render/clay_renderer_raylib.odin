@@ -11,6 +11,11 @@ Raylib_Font :: struct {
     font:   rl.Font,
 }
 
+Raylib_Image :: struct {
+    src: ^rl.Texture2D,
+    rec: rl.Rectangle
+}
+
 clay_color_to_rl_color :: proc(color: clay.Color) -> rl.Color {
     return {u8(color.r), u8(color.g), u8(color.b), u8(color.a)}
 }
@@ -62,8 +67,15 @@ clay_raylib_render :: proc(render_commands: ^clay.ClayArray(clay.RenderCommand),
                 tint = {255, 255, 255, 255}
             }
 
+            imageData := (^Raylib_Image)(config.imageData)
+            if imageData.rec == { 0, 0, 0, 0 } do imageData.rec = { 0, 0, f32(imageData.src.width), f32(imageData.src.height) }
+
+            rl.DrawTexturePro(imageData.src^, imageData.rec, transmute(rl.Rectangle)bounds, {}, 0, clay_color_to_rl_color(tint))
+
+            /*
             imageTexture := (^rl.Texture2D)(config.imageData)
             rl.DrawTextureEx(imageTexture^, {bounds.x, bounds.y}, 0, bounds.width / f32(imageTexture.width), clay_color_to_rl_color(tint))
+            */
         case .ScissorStart:
             rl.BeginScissorMode(i32(math.round(bounds.x)), i32(math.round(bounds.y)), i32(math.round(bounds.width)), i32(math.round(bounds.height)))
         case .ScissorEnd:
