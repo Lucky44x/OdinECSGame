@@ -46,10 +46,11 @@ Initializes the Resource Systems and it's Registries
 */
 init_registries :: proc() {
     types.registry_init(&AnimationRegistry, UnloadAnimation)
-    types.registry_init(&TextureRegistry, UnloadTexture)
-    types.registry_init(&TexturePathRegistry, proc(^cstring){})
 
     make_data_registries()
+
+    //Insert the default Texture (0)
+    InsertTexture("tex_null", nil)
 
     //Insert the default Item (0)
     InsertItem("item_null", ItemDescriptor{
@@ -86,9 +87,11 @@ init_registries :: proc() {
 }
 
 make_data_registries :: proc() {
+    types.registry_init(&TextureRegistry, proc(_: ^Texture){})
     types.registry_init(&ItemRegistry, UnloadItem)
     types.registry_init(&RecipeRegistry, UnloadRecipe)
     types.registry_init(&BuildingRegistry, UnloadBuilding)
+    types.registry_init(&TexturePathRegistry, proc(^TextureID){})
     types.registry_init(&ItemPathRegistry, proc(^ItemID){})
     types.registry_init(&RecipePathRegistry, proc(^RecipeID){})
     types.registry_init(&BuildingPathRegistry, proc(^BuildingID){})
@@ -99,15 +102,15 @@ Destroys all Registires and their contents inside the Data System
 */
 destroy_registries :: proc() {
     types.registry_destroy(&AnimationRegistry)
-    types.registry_destroy(&TextureRegistry)
-    types.registry_destroy(&TexturePathRegistry)
     destroy_data_registies()
 }
 
 destroy_data_registies :: proc() {
+    types.registry_destroy(&TextureRegistry)
     types.registry_destroy(&ItemRegistry)
     types.registry_destroy(&RecipeRegistry)
     types.registry_destroy(&BuildingRegistry)
+    types.registry_destroy(&TexturePathRegistry)
     types.registry_destroy(&ItemPathRegistry)
     types.registry_destroy(&RecipePathRegistry)
     types.registry_destroy(&BuildingPathRegistry)
@@ -124,6 +127,7 @@ count_data :: proc(
 reload_data :: proc() {
     //Count all files
     FILES_TO_LOAD = 0
+    FILES_TO_LOAD += u32(count_data("./assets/textures"))
     FILES_TO_LOAD += u32(count_data("./assets/items"))
     FILES_TO_LOAD += u32(count_data("./assets/recipes"))
     FILES_TO_LOAD += u32(count_data("./assets/machines"))
@@ -131,6 +135,10 @@ reload_data :: proc() {
     //Reset registries
     destroy_data_registies()
     make_data_registries()
+
+    //Load atlases first, then load general textures
+    LoadAllTextures("./assets/textures", "_atlas")
+    LoadAllTextures("./assets/textures", "_tex")
 
     LoadAllItems("./assets/items")
     //time.sleep(5 * time.Millisecond)
@@ -220,7 +228,8 @@ parse_sprite :: proc(
     }
     else {
         //If not primive or subimage, assume it's a texture
-        finalSprite.source = GetTextureByID(type)
+        //finalSprite.source = GetTextureByID(type)
+        //TODO: Replace with new call procedure
     }
 
     return finalSprite

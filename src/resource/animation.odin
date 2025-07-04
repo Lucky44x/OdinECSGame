@@ -67,7 +67,8 @@ LoadFrameAnimation :: proc (
         frameFilePath := filepath.join({directoryPath, frameFileName}, context.temp_allocator)
     
         frameFilePath_C := strings.clone_to_cstring(frameFilePath, context.temp_allocator)
-        newAnimation.frames[i] = LoadTexture(frameFilePath_C)
+        //TODO: Overhaul Animation system
+        //newAnimation.frames[i] = LoadTexture(frameFilePath_C)
         free_all(context.temp_allocator)
     }
 
@@ -98,12 +99,13 @@ LoadSheetAnimation :: proc (
     //Else, load the element from disk
     newAnimation := animation_clip_create(frameTime, frameCount)
 
-    sourceTexture := LoadTexture(filePath)
+    //TODO: Overhaul Animation system
+    //sourceTexture := LoadTexture(filePath)
 
     //Load Frames
     for i : i32 = 0; i < frameCount; i += 1 {
         newAnimation.frames[i] = SubImage{
-            tex = sourceTexture,
+            //tex = sourceTexture,
             srcRec = rl.Rectangle{
                 width = f32(frameWidth),
                 height = f32(frameHeight),
