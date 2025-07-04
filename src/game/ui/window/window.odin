@@ -12,8 +12,9 @@ UiWindow :: struct {
     title: string,
     windowid: u32,
     offset, grabOffset: clay.Vector2,
-    params: rawptr,
-    constructor: proc(rawptr),
+    params: []rawptr,
+    constructor: proc(^UiWindow, []rawptr),
+    onClose: proc(),
     isOpen, isDragging: bool
 }
 
@@ -31,16 +32,17 @@ WindowButtonStyle: clay.TextElementConfig = {
     textAlignment = clay.TextAlignment.Center
 }
 
-GetWindowParams :: proc($T: typeid, self: rawptr) -> T { return cast(T)self }
+GetWindowParams :: proc($T: typeid, self: rawptr) -> ^T { return cast(^T)self }
 
 AddWindow :: proc(
     window: UiWindow,
-) {
+) -> ^UiWindow {
     append(&Windows, window)
     ptr := &Windows[len(&Windows) - 1]
 
     ptr.windowid = auto_cast len(Windows)
     ptr.isOpen = true
+    return ptr
 }
 
 CleanWindows :: proc() {
@@ -55,6 +57,7 @@ CleanWindows :: proc() {
         }
 
         //If not open, remove at this index, but do not increment index
+        delete(Windows[index].params)
         ordered_remove(&Windows, index)
     }
 }
@@ -144,7 +147,7 @@ draw_window :: proc(window: ^UiWindow) {
                 },
             }) {
                 backCol := clay.Color{ 80, 80, 80, 255 }
-                if clay.Hovered() do backCol = clay.Color{ 255, 0, 0, 255 }
+                if clay.Hovered() do backCol = clay.Color{ 95, 95, 95, 255 }
                 
                 if clay.UI()({
                     id = clay.ID("window-button-inner", window.windowid),
@@ -153,6 +156,7 @@ draw_window :: proc(window: ^UiWindow) {
                         padding = { 8, 8, 8, 8 },
                         childAlignment = { x = clay.LayoutAlignmentX.Center, y = clay.LayoutAlignmentY.Center },
                     },
+                    cornerRadius = { 5, 5, 5, 5 },
                     backgroundColor = backCol
                 }) {
                     //TODO: Fix Later - Font ID gets mutated for some reason
@@ -167,8 +171,6 @@ draw_window :: proc(window: ^UiWindow) {
         }
 
         //Render Contents
-        window.constructor(window.params)
+        window.constructor(window, window.params)
     }
-
-    window.constructor(window.params)
 }

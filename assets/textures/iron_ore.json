@@ -1,0 +1,7 @@
+{
+    "id": "iron_ore",
+    "type": "subsprite",
+    "src": "item_sheet",
+    "offset_type": "relative",
+    "offset": [ 16, 2 ]
+}

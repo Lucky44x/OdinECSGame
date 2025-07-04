@@ -50,6 +50,17 @@ GetBuildingIDByPath :: proc(
     return types.registry_get(&BuildingPathRegistry, path)
 }
 
+GetBuildings :: proc() -> []^BuildingDescriptor {
+    retArr := make([]^BuildingDescriptor, len(BuildingRegistry.items))
+    index := 0
+    for _, &val in BuildingRegistry.items {
+        retArr[index] = &val
+        index += 1
+    }
+
+    return retArr
+}
+
 InsertBuilding :: proc(
     id: string,
     building: BuildingDescriptor

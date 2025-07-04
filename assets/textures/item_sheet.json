@@ -1,0 +1,7 @@
+{
+    "id": "item_sheet",
+    "type": "atlas",
+    "src": "src/item_sheet.png",
+    "texture-size": [ 32, 32 ],
+    "atlas-size": [ 16, 6 ]
+}

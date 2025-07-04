@@ -1,0 +1,17 @@
+{
+    "id": "dbg_smelter_recipe",
+    "name": "Smelt DBG Item",
+    "rate": 2,
+    "inputs": [
+        {
+            "item": "dbg_ore",
+            "count": 1
+        }
+    ],
+    "outputs": [
+        {
+            "item": "dbg_item",
+            "count": 1
+        }
+    ]
+}
