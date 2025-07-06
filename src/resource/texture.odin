@@ -182,10 +182,14 @@ subtexture_get_src_rec :: proc(
         return { 0, 0, 0, 0 }
     }
 
-    return {
+    ret := rl.Rectangle {
         x = subtexture.is_relative ? parentAtlas.cell_size[0] * subtexture.offset[0] : subtexture.offset[0],
         y = subtexture.is_relative ? parentAtlas.cell_size[1] * subtexture.offset[1] : subtexture.offset[1],
         width = parentAtlas.cell_size[0],
         height = parentAtlas.cell_size[1]
     }
+
+    //fmt.printfln("%s", ret)
+
+    return ret 
 }

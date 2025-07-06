@@ -69,6 +69,7 @@ clay_raylib_render :: proc(render_commands: ^clay.ClayArray(clay.RenderCommand),
 
             imageData := (^Raylib_Image)(config.imageData)
             if imageData.rec == { 0, 0, 0, 0 } do imageData.rec = { 0, 0, f32(imageData.src.width), f32(imageData.src.height) }
+            //fmt.printfln("%s", imageData.rec)
 
             rl.DrawTexturePro(imageData.src^, imageData.rec, transmute(rl.Rectangle)bounds, {}, 0, clay_color_to_rl_color(tint))
 

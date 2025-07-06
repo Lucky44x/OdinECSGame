@@ -216,32 +216,45 @@ ui_building_slot :: proc(
         backgroundColor = clay.Color{ 65, 65, 65, 255 },
         cornerRadius = { 5, 5, 5, 5 }
     }) {
-        if stack.id == 0 do return //TODO: Implement NULL Item placeholder
+        if stack.id == 0 {
+            fmt.printfln("NULL ITEM, CANNOT RENDER")
+            return
+        }
 
         //Get Stack item type
         item := resource.GetItemByID(stack.id)
         src := item.sprite.source
-        if type_of(src) != resource.TextureID do return //TODO: Implement other visuals
+
+        switch type in src {
+            case resource.PrimitiveEllipse:
+                fmt.printfln("Item does not have texture source")
+                return
+            case resource.PrimitiveRect:
+                fmt.printfln("Item does not have texture source")
+                return
+            case resource.TextureID:
+                break
+        }
+
         srcID := src.(resource.TextureID)
         srcTex := resource.GetTextureByID(srcID)
 
         srcRec: rl.Rectangle
         srcRef: ^rl.Texture2D
 
-        #partial switch &type in srcTex {
+        #partial switch &texType in srcTex {
             case resource.SubTexture:
-                srcRec = resource.get_src_rec(&type)
-                source := resource.GetTextureByID(type.src)
-                assert(type_of(source) == resource.TextureAtlas, "Source Texture was not an atlas")
+                srcRec = resource.get_src_rec(&texType)
+                source := resource.GetTextureByID(texType.src)
                 temp := source.(resource.TextureAtlas)
                 srcRef = &temp.src
                 break
             case rl.Texture2D:
-                srcRec = resource.get_src_rec(&type)
-                srcRef = &type
+                srcRec = resource.get_src_rec(&texType)
+                srcRef = &texType
                 break
         }
-        data := new(clayrl.Raylib_Image, context.temp_allocator)
+        data := new(clayrl.Raylib_Image)
         data.src = srcRef
         data.rec = srcRec
 
@@ -253,7 +266,7 @@ ui_building_slot :: proc(
             cornerRadius = { 5, 5, 5, 5 },
             image = { rawptr(&data) }
         }) {
-            //clay.TextDynamic(fmt.tprintf("%i", stack.count), &WindowSlotStyle)
+            clay.TextDynamic(fmt.tprintf("%i", stack.count), &WindowSlotStyle)
         }
     }
 }

@@ -221,6 +221,7 @@ parse_sprite :: proc(
         //Assume it's a texture and try to get ID
         id, err := GetTextureIDByPath(type)
         assert(id != nil, fmt.tprintfln("Could not find texture %s \n %s", type, loc))
+        finalSprite.source = id^
     }
 
     return finalSprite
@@ -249,6 +250,9 @@ render_sprite :: proc(
         case PrimitiveRect:
             rl.DrawRectanglePro(dstRec, origin_px, rotation, sprite.color)
             break
+        case TextureID:
+            draw_texture(type, dstRec, origin_px, rotation, sprite.color)
+            break
     }
 }
 
@@ -273,7 +277,19 @@ draw_texture :: proc(
         case SubTexture:
             srcRec = get_src_rec(&type)
             source := GetTextureByID(type.src)
-            assert(type_of(source) == TextureAtlas, "Source Texture was not an atlas", loc)
+            
+            #partial switch &texType in source {
+                case TextureAtlas:
+                    break
+                case rl.Texture2D:
+                    fmt.printfln("Source of subtexture %i with id %i was not of type atlas but of type Texture2D", id, type.src)
+                    return
+                case SubTexture:
+                    fmt.printfln("Source of subtexture %i with id %i was not of type atlas but of type SubTexture", id, type.src)
+                    return
+            }
+
+            //assert(, "Source Texture was not an atlas", loc)
             temp := source.(TextureAtlas)
             tex = temp.src
             break
